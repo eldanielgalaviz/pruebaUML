@@ -11,6 +11,11 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @NgModule({
   exports: [
@@ -25,7 +30,12 @@ import { MatSelectModule } from '@angular/material/select';
     MatPaginatorModule,
     MatSortModule,
     MatDialogModule,
-    MatSelectModule
+    MatSelectModule,
+    MatOptionModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatMenuModule,
+    MatSidenavModule
   ]
 })
 export class MaterialModule { }

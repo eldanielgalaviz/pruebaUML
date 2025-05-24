@@ -1,4 +1,3 @@
-// src/users/entities/grupo.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from 'typeorm';
 import { Alumno } from './alumno.entity';
 import { JefeGrupo } from './jefe-grupo.entity';
@@ -14,6 +13,12 @@ export class Grupo {
 
   @Column({ nullable: true })
   descripcion: string;
+
+  @Column({ nullable: true })
+  codigo: string; // AÑADE ESTE CAMPO
+
+  @Column({ default: true })
+  activo: boolean; // AÑADE ESTE CAMPO
 
   @OneToMany(() => Alumno, alumno => alumno.grupo)
   alumnos: Alumno[];

@@ -1,0 +1,53 @@
+/* frontend/src/app/dashboard/dashboard.component.scss */
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.role-dashboard {
+  padding: 20px;
+}
+
+.role-dashboard h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.dashboard-card mat-card-content {
+  padding: 16px 0;
+}
+
+.dashboard-card mat-card-actions {
+  padding: 16px;
+  justify-content: center;
+}
+
+mat-toolbar span {
+  margin-right: 16px;
+}
+
+mat-toolbar button {
+  margin-left: 8px;
+}

@@ -1,4 +1,3 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -6,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
+import { AcademicModule } from './academic/academic.module';
 
 @Module({
   imports: [
@@ -38,6 +38,7 @@ import { TasksModule } from './tasks/tasks.module';
     UsersModule,
     ProjectsModule,
     TasksModule,
+    AcademicModule, // ✅ AGREGADO
   ],
 })
 export class AppModule {}

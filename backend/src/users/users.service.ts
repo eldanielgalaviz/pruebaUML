@@ -1,4 +1,3 @@
-// src/users/users.service.ts
 import { Injectable, ConflictException, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, Not } from 'typeorm';
@@ -30,52 +29,57 @@ export class UsersService {
     @InjectRepository(Administrador)
     private administradorRepository: Repository<Administrador>,
   ) {}
-
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      // Validar email y username por separado para dar mensajes más específicos
-      const existingEmail = await this.usersRepository.findOne({
-        where: { email: createUserDto.email },
-      });
-
-      if (existingEmail) {
-        throw new ConflictException('El email ya está registrado');
-      }
-
-      const existingUsername = await this.usersRepository.findOne({
-        where: { username: createUserDto.username },
-      });
-
-      if (existingUsername) {
-        throw new ConflictException('El nombre de usuario ya está en uso');
-      }
-
-      if (createUserDto.password !== createUserDto.confirmPassword) {
-        throw new BadRequestException('Las contraseñas no coinciden');
-      }
-
-      // Validar requisitos de contraseña
-      PasswordValidator.validate(createUserDto.password);
-
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
-      // Eliminar confirmPassword antes de crear el usuario
-      const { confirmPassword, ...userData } = createUserDto;
-      
-      const user = this.usersRepository.create({
-        ...userData,
-        password: hashedPassword,
-        isEmailConfirmed: false,
-      });
-
-      return await this.usersRepository.save(user);
-    } catch (error) {
-      if (error instanceof ConflictException || error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Error al crear el usuario');
-    }
+// backend/src/users/users.service.ts - Actualizar el método findByEmail
+async findByEmail(email: string): Promise<User | null> {
+  try {
+    const user = await this.usersRepository.findOne({ 
+      where: { email },
+      select: ['id', 'email', 'username', 'password', 'nombre', 'apellidoPaterno', 'apellidoMaterno', 'rol', 'isEmailConfirmed'] 
+    });
+    return user;
+  } catch (error) {
+    throw new InternalServerErrorException('Error al buscar el usuario por email');
   }
+}
+
+// También actualizar el método create para no validar contraseñas duplicadamente
+async create(createUserDto: CreateUserDto): Promise<User> {
+  try {
+    // Validar email y username por separado
+    const existingEmail = await this.usersRepository.findOne({
+      where: { email: createUserDto.email },
+    });
+
+    if (existingEmail) {
+      throw new ConflictException('El email ya está registrado');
+    }
+
+    const existingUsername = await this.usersRepository.findOne({
+      where: { username: createUserDto.username },
+    });
+
+    if (existingUsername) {
+      throw new ConflictException('El nombre de usuario ya está en uso');
+    }
+
+
+
+    // Eliminar confirmPassword antes de crear el usuario
+    const { confirmPassword, ...userData } = createUserDto;
+    
+    const user = this.usersRepository.create({
+      ...userData,
+      isEmailConfirmed: false,
+    });
+
+    return await this.usersRepository.save(user);
+  } catch (error) {
+    if (error instanceof ConflictException || error instanceof BadRequestException) {
+      throw error;
+    }
+    throw new InternalServerErrorException('Error al crear el usuario');
+  }
+}
 
   async findOne(id: number): Promise<User> {
     try {
@@ -115,20 +119,7 @@ export class UsersService {
     }
   }
 
-  async findByEmail(email: string): Promise<User> {
-    try {
-      const user = await this.usersRepository.findOne({ where: { email } });
-      if (!user) {
-        throw new NotFoundException('Usuario no encontrado');
-      }
-      return user;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Error al buscar el usuario');
-    }
-  }
+
 
   async findByConfirmationToken(token: string): Promise<User> {
     try {

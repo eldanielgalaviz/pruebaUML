@@ -1,4 +1,3 @@
-// src/users/entities/horario.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Grupo } from './grupo.entity';
 import { Aula } from './aula.entity';
@@ -20,6 +19,9 @@ export class Horario {
 
   @Column()
   materia: string;
+
+  @Column({ default: true })
+  activo: boolean; // AÑADE ESTE CAMPO
 
   @Column()
   grupoId: number;

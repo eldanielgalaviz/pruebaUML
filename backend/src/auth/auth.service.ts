@@ -1,4 +1,3 @@
-// src/auth/auth.service.ts
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
@@ -23,6 +22,11 @@ export class AuthService {
   }
 
   async register(createUserDto: any) {
+    // Validar que las contraseñas coincidan ANTES de hashear
+    if (createUserDto.password !== createUserDto.confirmPassword) {
+      throw new BadRequestException('Las contraseñas no coinciden');
+    }
+
     // Generar token de confirmación
     const confirmationToken = crypto.randomBytes(32).toString('hex');
     console.log('Token generado:', confirmationToken);
@@ -37,16 +41,21 @@ export class AuthService {
       confirmationToken,
       isEmailConfirmed: false,
     });
-    console.log('Usuario creado:', { id: user.id, email: user.email });
+    console.log('Usuario creado:', { id: user.id, email: user.email, rol: user.rol });
 
-    // Enviar email de confirmación
-    console.log('Intentando enviar email de confirmación');
-    await this.emailService.sendConfirmationEmail(user.email, confirmationToken);
-    console.log('Email de confirmación enviado');
+    // Enviar email de confirmación (opcional)
+    try {
+      console.log('Intentando enviar email de confirmación');
+      await this.emailService.sendConfirmationEmail(user.email, confirmationToken);
+      console.log('Email de confirmación enviado');
+    } catch (error) {
+      console.warn('No se pudo enviar el email de confirmación:', error.message);
+    }
 
     return { 
-      message: 'Por favor, verifica tu correo electrónico para completar el registro',
-      userId: user.id 
+      message: 'Usuario registrado exitosamente',
+      userId: user.id,
+      rol: user.rol
     };
   }
 
@@ -74,7 +83,6 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email);
     
     if (!user) {
-      // Por seguridad, no revelamos si el email existe o no
       return { message: 'Si el email existe, recibirás un enlace para restablecer tu contraseña' };
     }
 
@@ -99,10 +107,8 @@ export class AuthService {
       throw new UnauthorizedException('Token inválido o expirado');
     }
 
-    // Hash nueva contraseña
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Actualizar usuario
     await this.usersService.update(user.id, {
       password: hashedPassword,
       passwordResetToken: null,
@@ -112,12 +118,12 @@ export class AuthService {
     return { message: 'Contraseña actualizada correctamente' };
   }
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(email: string, password: string): Promise<any> {
     try {
-      console.log('Intentando validar usuario:', username);
-      const user = await this.usersService.findByUsername(username);
+      console.log('Intentando validar usuario:', email);
+      const user = await this.usersService.findByEmail(email);
 
-      console.log('Usuario encontrado:', user);
+      console.log('Usuario encontrado:', { id: user?.id, email: user?.email, rol: user?.rol });
       if (!user) {
         throw new UnauthorizedException('Credenciales inválidas');
       }
@@ -136,24 +142,31 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: { username: string; password: string }) {
+  async login(loginDto: { email: string; password: string }) {
     console.log('Datos de login recibidos:', loginDto);
-    const user = await this.validateUser(loginDto.username, loginDto.password);
+    const user = await this.validateUser(loginDto.email, loginDto.password);
 
     const payload = {
       email: user.email,
       sub: user.id,
       username: user.username,
-      nombre: user.nombre
+      nombre: user.nombre,
+      rol: user.rol
     };
 
+    const token = this.jwtService.sign(payload);
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: token,
+      token: token,
       user: {
         id: user.id,
         email: user.email,
         username: user.username,
-        nombre: user.nombre
+        nombre: user.nombre,
+        apellidoPaterno: user.apellidoPaterno,
+        apellidoMaterno: user.apellidoMaterno,
+        rol: user.rol
       }
     };
   }

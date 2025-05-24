@@ -1,8 +1,17 @@
-// src/users/users.module.ts
+
+// backend/src/users/users.module.ts - FINAL VERSION
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
+import { GruposService } from './services/grupos.service';
+import { HorariosService } from './services/horarios.service';
+import { AulasService } from './services/aulas.service';
+import { ProfesoresService } from './services/profesores.service';
+import { GruposController } from './controllers/grupos.controller';
+import { HorariosController } from './controllers/horarios.controller';
+import { AulasController } from './controllers/aulas.controller';
+import { ProfesoresController } from './controllers/profesores.controller';
 import { User } from './entities/user.entity';
 import { Alumno } from './entities/alumno.entity';
 import { JefeGrupo } from './entities/jefe-grupo.entity';
@@ -29,8 +38,26 @@ import { Asistencia } from './entities/asistencia.entity';
       Asistencia
     ])
   ],
-  controllers: [UsersController],
-  providers: [UsersService],
-  exports: [UsersService],
+  controllers: [
+    UsersController,
+    GruposController,
+    HorariosController,
+    AulasController,
+    ProfesoresController
+  ],
+  providers: [
+    UsersService,
+    GruposService,
+    HorariosService,
+    AulasService,
+    ProfesoresService
+  ],
+  exports: [
+    UsersService,
+    GruposService,
+    HorariosService,
+    AulasService,
+    ProfesoresService
+  ],
 })
 export class UsersModule {}

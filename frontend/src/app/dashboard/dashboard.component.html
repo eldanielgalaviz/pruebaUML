@@ -1,0 +1,218 @@
+<!-- frontend/src/app/dashboard/dashboard.component.html -->
+<div class="dashboard-container">
+  <mat-toolbar color="primary">
+    <span>Sistema de Asistencias</span>
+    <span class="spacer"></span>
+    <span>{{ currentUser?.nombre }} {{ currentUser?.apellidoPaterno }} ({{ roleLabel }})</span>
+    <button mat-button (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Cerrar Sesión
+    </button>
+  </mat-toolbar>
+
+  <div class="dashboard-content">
+    <!-- Dashboard para ALUMNO -->
+    <div *ngIf="isAlumno" class="role-dashboard">
+      <h2>Dashboard - Alumno</h2>
+      <div class="dashboard-cards">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Mi Horario</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Ver mi horario de clases asignado</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Ver Horario</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Mis Profesores</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Ver información de mis profesores</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Ver Profesores</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Dashboard para JEFE DE GRUPO -->
+    <div *ngIf="isJefeGrupo" class="role-dashboard">
+      <h2>Dashboard - Jefe de Grupo</h2>
+      <div class="dashboard-cards">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Horario del Grupo</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Ver el horario completo de mi grupo</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Ver Horario Grupo</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Horarios de Profesores</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Ver horarios de profesores asignados</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Ver Horarios</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Dashboard para PROFESOR -->
+    <div *ngIf="isProfesor" class="role-dashboard">
+      <h2>Dashboard - Profesor</h2>
+      <div class="dashboard-cards">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Mis Horarios</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Ver todos mis horarios asignados</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Ver Mis Horarios</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Marcar Asistencia</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Registrar mi asistencia del día</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="accent">Marcar Asistencia</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Dashboard para CHECADOR -->
+    <div *ngIf="isChecador" class="role-dashboard">
+      <h2>Dashboard - Checador</h2>
+      <div class="dashboard-cards">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Todos los Maestros</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Ver lista completa de maestros</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Ver Maestros</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Marcar Asistencias</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Marcar asistencia a todos los maestros</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="accent">Gestionar Asistencias</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Dashboard para ADMINISTRADOR -->
+    <div *ngIf="isAdministrador" class="role-dashboard">
+      <h2>Dashboard - Administrador</h2>
+      <div class="dashboard-cards">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Gestionar Alumnos</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Agregar, editar y eliminar alumnos</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Gestionar Alumnos</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Gestionar Profesores</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Agregar, editar y eliminar profesores</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Gestionar Profesores</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Gestionar Grupos</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Crear y administrar grupos</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Gestionar Grupos</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Gestionar Horarios</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Crear y asignar horarios</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Gestionar Horarios</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Gestionar Aulas</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Crear y administrar aulas</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">Gestionar Aulas</button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-card-title>Reportes</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Generar reportes de asistencias</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="accent">Ver Reportes</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Mensaje si no hay rol asignado -->
+    <div *ngIf="!userRole" class="role-dashboard">
+      <h2>Bienvenido</h2>
+      <p>Tu cuenta no tiene un rol asignado. Contacta al administrador.</p>
+    </div>
+  </div>
+</div>

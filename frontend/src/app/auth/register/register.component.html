@@ -1,3 +1,4 @@
+<!-- frontend/src/app/auth/register/register.component.html -->
 <div class="register-container">
   <mat-card>
     <mat-card-header>
@@ -7,15 +8,10 @@
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
 
         <mat-form-field appearance="outline">
-          <mat-label>Nombre</mat-label>
-          <input matInput placeholder="Nombre" formControlName="firstName">
-          <mat-error *ngIf="f['firstName'].errors?.['required']">El nombre es requerido</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Apellido</mat-label>
-          <input matInput placeholder="Apellido" formControlName="lastName">
-          <mat-error *ngIf="f['lastName'].errors?.['required']">El apellido es requerido</mat-error>
+          <mat-label>Nombre de Usuario</mat-label>
+          <input matInput placeholder="Nombre de Usuario" formControlName="username">
+          <mat-error *ngIf="f['username'].errors?.['required']">El nombre de usuario es requerido</mat-error>
+          <mat-error *ngIf="f['username'].errors?.['minlength']">Mínimo 3 caracteres</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -36,12 +32,56 @@
           </mat-error>
         </mat-form-field>
 
+        <mat-form-field appearance="outline">
+          <mat-label>Confirmar Contraseña</mat-label>
+          <input matInput type="password" placeholder="Confirmar Contraseña" formControlName="confirmPassword">
+          <mat-error *ngIf="f['confirmPassword'].errors">
+            <span *ngIf="f['confirmPassword'].errors?.['required']">Debe confirmar la contraseña.</span>
+            <span *ngIf="f['confirmPassword'].errors?.['passwordMismatch']">Las contraseñas no coinciden.</span>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput placeholder="Nombre" formControlName="nombre">
+          <mat-error *ngIf="f['nombre'].errors?.['required']">El nombre es requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido Paterno</mat-label>
+          <input matInput placeholder="Apellido Paterno" formControlName="apellidoPaterno">
+          <mat-error *ngIf="f['apellidoPaterno'].errors?.['required']">El apellido paterno es requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido Materno</mat-label>
+          <input matInput placeholder="Apellido Materno" formControlName="apellidoMaterno">
+          <mat-error *ngIf="f['apellidoMaterno'].errors?.['required']">El apellido materno es requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha de Nacimiento</mat-label>
+          <input matInput type="date" formControlName="fechaNacimiento">
+          <mat-error *ngIf="f['fechaNacimiento'].errors?.['required']">La fecha de nacimiento es requerida</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de Usuario</mat-label>
+          <mat-select formControlName="rol">
+            <mat-option *ngFor="let role of roles" [value]="role.value">
+              {{ role.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="f['rol'].errors?.['required']">Debe seleccionar un tipo de usuario</mat-error>
+        </mat-form-field>
+
         <div *ngIf="errorMessage" class="error-message">
           {{ errorMessage }}
         </div>
 
-        <button mat-raised-button color="primary" type="submit" [disabled]="!registerForm.valid">
-          Registrarse
+        <button mat-raised-button color="primary" type="submit" [disabled]="!registerForm.valid || loading">
+          <span *ngIf="loading">Registrando...</span>
+          <span *ngIf="!loading">Registrarse</span>
         </button>
       </form>
     </mat-card-content>

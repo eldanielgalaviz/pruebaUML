@@ -9,11 +9,13 @@ import { User } from '../models/user.model';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:3005/api/auth';
-  private currentUserSubject: BehaviorSubject<User | null>;
+  public currentUserSubject: BehaviorSubject<User | null>; // ✅ PÚBLICO
   public currentUser: Observable<User | null>;
 
   constructor(private http: HttpClient) {
-    this.currentUserSubject = new BehaviorSubject<User | null>(JSON.parse(localStorage.getItem('currentUser') || 'null'));
+    const storedUser = localStorage.getItem('currentUser');
+    const user = storedUser ? JSON.parse(storedUser) : null;
+    this.currentUserSubject = new BehaviorSubject<User | null>(user);
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
@@ -23,10 +25,19 @@ export class AuthService {
 
   login(credentials: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(user => {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        this.currentUserSubject.next(user);
-        return user;
+      tap(response => {
+        console.log('Response del login:', response);
+        
+        // Guardar token
+        localStorage.setItem('token', response.token || response.access_token);
+        
+        // Guardar usuario completo
+        localStorage.setItem('currentUser', JSON.stringify(response.user));
+        
+        // Actualizar BehaviorSubject
+        this.currentUserSubject.next(response.user);
+        
+        return response;
       })
     );
   }
@@ -37,6 +48,16 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
     this.currentUserSubject.next(null);
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.currentUserValue;
+  }
+
+  getUserRole(): string | null {
+    const user = this.currentUserValue;
+    return user ? user.rol || null : null;
   }
 }

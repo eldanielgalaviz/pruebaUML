@@ -1,6 +1,13 @@
-// src/users/entities/user.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
+
+export enum UserRole {
+  ALUMNO = 'alumno',
+  JEFE_GRUPO = 'jefe_grupo',
+  PROFESOR = 'profesor',
+  CHECADOR = 'checador',
+  ADMINISTRADOR = 'administrador'
+}
 
 @Entity('users')
 export class User {
@@ -28,6 +35,13 @@ export class User {
 
   @Column({ type: 'date' })
   fechaNacimiento: Date;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.ALUMNO
+  })
+  rol: UserRole;
 
   @CreateDateColumn()
   createdAt: Date;

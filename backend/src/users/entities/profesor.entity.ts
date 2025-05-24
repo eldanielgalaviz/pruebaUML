@@ -1,4 +1,3 @@
-// src/users/entities/profesor.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Horario } from './horario.entity';
@@ -11,6 +10,9 @@ export class Profesor {
 
   @Column({ unique: true })
   idProfesor: string;
+
+  @Column({ default: true })
+  activo: boolean; // AÑADE ESTE CAMPO
 
   @Column()
   userId: number;
