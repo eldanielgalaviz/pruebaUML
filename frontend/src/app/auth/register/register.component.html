@@ -1,0 +1,49 @@
+<div class="register-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Registrarse</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput placeholder="Nombre" formControlName="firstName">
+          <mat-error *ngIf="f['firstName'].errors?.['required']">El nombre es requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido</mat-label>
+          <input matInput placeholder="Apellido" formControlName="lastName">
+          <mat-error *ngIf="f['lastName'].errors?.['required']">El apellido es requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Correo Electrónico</mat-label>
+          <input matInput placeholder="Correo Electrónico" formControlName="email">
+          <mat-error *ngIf="f['email'].errors">
+            <span *ngIf="f['email'].errors?.['required']">El correo electrónico es requerido.</span>
+            <span *ngIf="f['email'].errors?.['email']">Por favor, ingrese un correo electrónico válido.</span>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input matInput type="password" placeholder="Contraseña" formControlName="password">
+          <mat-error *ngIf="f['password'].errors">
+            <span *ngIf="f['password'].errors?.['required']">La contraseña es requerida.</span>
+            <span *ngIf="f['password'].errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</span>
+          </mat-error>
+        </mat-form-field>
+
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="!registerForm.valid">
+          Registrarse
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
