@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsBoolean, IsString, IsOptional, IsNumber, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsBoolean, IsString, IsOptional, IsNumber } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateAsistenciaDto {
@@ -25,4 +25,8 @@ export class CreateAsistenciaDto {
   @IsOptional()
   @IsNumber()
   horarioId?: number;
+
+  @IsOptional()
+  @IsNumber()
+  checadorId?: number;
 }

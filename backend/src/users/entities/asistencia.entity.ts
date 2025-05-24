@@ -1,6 +1,6 @@
-// src/users/entities/asistencia.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Profesor } from './profesor.entity';
+import { Horario } from './horario.entity';
 import { Checador } from './checador.entity';
 
 @Entity('asistencias')
@@ -17,9 +17,16 @@ export class Asistencia {
   @Column({ default: false })
   asistio: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   observaciones: string;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  // Relación con Profesor
   @Column()
   profesorId: number;
 
@@ -27,10 +34,19 @@ export class Asistencia {
   @JoinColumn({ name: 'profesorId' })
   profesor: Profesor;
 
-  @Column()
+  // Relación opcional con Horario
+  @Column({ nullable: true })
+  horarioId: number;
+
+  @ManyToOne(() => Horario, horario => horario.asistencias, { nullable: true })
+  @JoinColumn({ name: 'horarioId' })
+  horario: Horario;
+
+  // Relación con Checador
+  @Column({ nullable: true })
   checadorId: number;
 
-  @ManyToOne(() => Checador, checador => checador.asistencias)
+  @ManyToOne(() => Checador, checador => checador.asistencias, { nullable: true })
   @JoinColumn({ name: 'checadorId' })
   checador: Checador;
 }

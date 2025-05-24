@@ -1,4 +1,3 @@
-// backend/src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -6,16 +5,13 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
-import { AcademicModule } from './academic/academic.module';
 
 @Module({
   imports: [
-    // Configuración global
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     
-    // Configuración de base de datos
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -26,19 +22,18 @@ import { AcademicModule } from './academic/academic.module';
         password: configService.get('DB_PASSWORD', 'admin'),
         database: configService.get('DB_NAME', 'app_database'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // Solo para desarrollo
+        synchronize: true,
         logging: false,
+        dropSchema: false, // ✅ CAMBIAR A FALSE
         autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
     
-    // Módulos funcionales
     AuthModule,
     UsersModule,
     ProjectsModule,
     TasksModule,
-    AcademicModule, // ✅ AGREGADO Y FUNCIONAL
   ],
 })
 export class AppModule {}

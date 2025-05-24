@@ -1,6 +1,3 @@
-
-
-// frontend/src/app/admin/dialogs/horario-dialog/horario-dialog.component.ts
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -92,7 +89,7 @@ import { AdminService } from '../../services/admin.service';
             <mat-label>Aula</mat-label>
             <mat-select formControlName="aulaId">
               <mat-option *ngFor="let aula of aulas" [value]="aula.id">
-                {{ aula.codigo }} - {{ aula.nombre }} ({{ aula.capacidad }} personas)
+                {{ aula.numero }} ({{ aula.capacidad }} personas)
               </mat-option>
             </mat-select>
             <mat-error *ngIf="horarioForm.get('aulaId')?.hasError('required')">
@@ -100,27 +97,12 @@ import { AdminService } from '../../services/admin.service';
             </mat-error>
           </mat-form-field>
         </div>
-
-        <!-- Mostrar conflictos si los hay -->
-        <div *ngIf="conflictos.length > 0" class="conflictos-warning">
-          <mat-icon color="warn">warning</mat-icon>
-          <span>¡Atención! Se detectaron conflictos:</span>
-          <ul>
-            <li *ngFor="let conflicto of conflictos">
-              {{ conflicto.profesor?.usuario?.nombre }} ya tiene {{ conflicto.materia }} 
-              en {{ conflicto.aula?.codigo }} a la misma hora
-            </li>
-          </ul>
-        </div>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions>
       <button mat-button (click)="onCancel()">Cancelar</button>
-      <button mat-button (click)="checkConflictos()" [disabled]="!canCheckConflicts()">
-        Verificar Conflictos
-      </button>
-      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!horarioForm.valid || conflictos.length > 0">
+      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!horarioForm.valid">
         {{ data ? 'Actualizar' : 'Guardar' }}
       </button>
     </mat-dialog-actions>
@@ -134,26 +116,6 @@ import { AdminService } from '../../services/admin.service';
 
     .form-row mat-form-field {
       flex: 1;
-    }
-
-    .conflictos-warning {
-      background-color: #fff3cd;
-      border: 1px solid #ffeaa7;
-      border-radius: 4px;
-      padding: 15px;
-      margin: 15px 0;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .conflictos-warning mat-icon {
-      margin-top: 2px;
-    }
-
-    .conflictos-warning ul {
-      margin: 5px 0 0 0;
-      padding-left: 20px;
     }
 
     mat-dialog-content {
@@ -173,7 +135,6 @@ export class HorarioDialogComponent implements OnInit {
   grupos: any[] = [];
   profesores: any[] = [];
   aulas: any[] = [];
-  conflictos: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -196,7 +157,6 @@ export class HorarioDialogComponent implements OnInit {
   ngOnInit(): void {
     this.loadData();
     
-    // Si estamos editando, cargar los datos
     if (this.data) {
       this.horarioForm.patchValue({
         dia: this.data.dia,
@@ -211,55 +171,24 @@ export class HorarioDialogComponent implements OnInit {
   }
 
   loadData(): void {
-    // Cargar grupos
     this.adminService.getGrupos().subscribe({
       next: (grupos) => this.grupos = grupos,
       error: (error) => console.error('Error al cargar grupos:', error)
     });
 
-    // Cargar profesores
     this.adminService.getProfesores().subscribe({
       next: (profesores) => this.profesores = profesores,
       error: (error) => console.error('Error al cargar profesores:', error)
     });
 
-    // Cargar aulas
     this.adminService.getAulas().subscribe({
       next: (aulas) => this.aulas = aulas,
       error: (error) => console.error('Error al cargar aulas:', error)
     });
   }
 
-  canCheckConflicts(): boolean {
-    const form = this.horarioForm;
-    return form.get('dia')?.valid && 
-           form.get('horaInicio')?.valid && 
-           form.get('horaFin')?.valid;
-  }
-
-  checkConflictos(): void {
-    if (!this.canCheckConflicts()) {
-      return;
-    }
-
-    const { dia, horaInicio, horaFin } = this.horarioForm.value;
-    
-    this.adminService.checkConflictosHorario(dia, horaInicio, horaFin).subscribe({
-      next: (conflictos) => {
-        this.conflictos = conflictos;
-        if (conflictos.length === 0) {
-          this.snackBar.open('No se detectaron conflictos', 'Cerrar', { duration: 2000 });
-        }
-      },
-      error: (error) => {
-        console.error('Error al verificar conflictos:', error);
-        this.snackBar.open('Error al verificar conflictos', 'Cerrar', { duration: 3000 });
-      }
-    });
-  }
-
   onSave(): void {
-    if (this.horarioForm.valid && this.conflictos.length === 0) {
+    if (this.horarioForm.valid) {
       const horarioData = this.horarioForm.value;
       
       const request = this.data ? 

@@ -1,4 +1,3 @@
-// frontend/src/app/admin/admin-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
@@ -8,12 +7,13 @@ const routes: Routes = [
   { path: '', component: AdminDashboardComponent },
   { path: 'panel', component: AdminDashboardComponent },
   { path: 'grupos', component: GruposManagementComponent },
-  // Rutas temporales que muestran "en desarrollo"
-  { path: 'horarios', component: AdminDashboardComponent },
-  { path: 'aulas', component: AdminDashboardComponent },
-  { path: 'alumnos', component: AdminDashboardComponent },
-  { path: 'profesores', component: AdminDashboardComponent },
-  { path: 'asistencias', component: AdminDashboardComponent }
+  
+  // ✅ Agregar estas rutas cuando crees los componentes
+  // { path: 'horarios', component: HorariosManagementComponent },
+  // { path: 'aulas', component: AulasManagementComponent },
+  // { path: 'alumnos', component: AlumnosManagementComponent },
+  // { path: 'profesores', component: ProfesoresManagementComponent },
+  // { path: 'asistencias', component: AsistenciasManagementComponent }
 ];
 
 @NgModule({

@@ -1,5 +1,3 @@
-
-// backend/src/users/users.module.ts - FINAL VERSION
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
@@ -8,10 +6,14 @@ import { GruposService } from './services/grupos.service';
 import { HorariosService } from './services/horarios.service';
 import { AulasService } from './services/aulas.service';
 import { ProfesoresService } from './services/profesores.service';
+import { AlumnosService } from './services/alumnos.service';
+import { AsistenciasService } from './services/asistencias.service';
 import { GruposController } from './controllers/grupos.controller';
 import { HorariosController } from './controllers/horarios.controller';
 import { AulasController } from './controllers/aulas.controller';
 import { ProfesoresController } from './controllers/profesores.controller';
+import { AlumnosController } from './controllers/alumnos.controller';
+import { AsistenciasController } from './controllers/asistencias.controller';
 import { User } from './entities/user.entity';
 import { Alumno } from './entities/alumno.entity';
 import { JefeGrupo } from './entities/jefe-grupo.entity';
@@ -43,21 +45,27 @@ import { Asistencia } from './entities/asistencia.entity';
     GruposController,
     HorariosController,
     AulasController,
-    ProfesoresController
+    ProfesoresController,
+    AlumnosController,
+    AsistenciasController
   ],
   providers: [
     UsersService,
     GruposService,
     HorariosService,
     AulasService,
-    ProfesoresService
+    ProfesoresService,
+    AlumnosService,
+    AsistenciasService
   ],
   exports: [
     UsersService,
     GruposService,
     HorariosService,
     AulasService,
-    ProfesoresService
+    ProfesoresService,
+    AlumnosService,
+    AsistenciasService
   ],
 })
 export class UsersModule {}

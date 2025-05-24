@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Grupo } from './grupo.entity';
 import { Aula } from './aula.entity';
 import { Profesor } from './profesor.entity';
+import { Asistencia } from './asistencia.entity';
 
 @Entity('horarios')
 export class Horario {
@@ -21,7 +22,7 @@ export class Horario {
   materia: string;
 
   @Column({ default: true })
-  activo: boolean; // AÑADE ESTE CAMPO
+  activo: boolean;
 
   @Column()
   grupoId: number;
@@ -43,4 +44,8 @@ export class Horario {
   @ManyToOne(() => Profesor, profesor => profesor.horarios)
   @JoinColumn({ name: 'profesorId' })
   profesor: Profesor;
+
+  // ✅ AÑADIR esta relación que faltaba
+  @OneToMany(() => Asistencia, asistencia => asistencia.horario)
+  asistencias: Asistencia[];
 }

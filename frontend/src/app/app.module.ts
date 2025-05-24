@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+
+// Material Design Modules BÁSICOS
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -28,7 +30,7 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
     MatToolbarModule,
     MatButtonModule,
     MatCardModule,
-    MatIconModule,
+    MatIconModule, // ✅ IMPORTANTE: Material Icons
     AppRoutingModule,
     AuthModule
   ],
