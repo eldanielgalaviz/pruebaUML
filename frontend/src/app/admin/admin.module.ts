@@ -34,7 +34,9 @@ import { AsistenciasManagementComponent } from './components/asistencias-managem
 
 // Diálogos
 import { GrupoDialogComponent } from './dialogs/grupo-dialog/grupo-dialog.component';
-import { HorarioDialogComponent } from './dialogs/alumno-dialog/alumno-dialog.component';
+// import { HorarioDialogComponent } from './dialogs/alumno-dialog/alumno-dialog.component';
+// import { HorarioDialogComponent } from './dialogs/alumno-dialog/alumno-dialog.component';
+import { HorarioDialogComponent } from './dialogs/horario-dialog/horario-dialog.components';
 import { AulaDialogComponent } from './dialogs/aula-dialog/aula-dialog.component';
 import { AlumnoDialogComponent } from './dialogs/alumno-dialog/alumno-dialog.component';
 import { ProfesorDialogComponent } from './dialogs/profesor-dialog/profesor-dialog.component';
@@ -51,6 +53,7 @@ import { AsignacionGrupoDialogComponent } from './dialogs/asignacion-grupo-dialo
     AlumnosManagementComponent,
     ProfesoresManagementComponent,
     AsistenciasManagementComponent,
+    HorarioDialogComponent,
     
     // Diálogos
     GrupoDialogComponent,

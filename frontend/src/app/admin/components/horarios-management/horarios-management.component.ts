@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from '../../services/admin.service';
-import { HorarioDialogComponent } from '../../dialogs/horario-dialog/horario-dialog.component';
+// import { HorarioDialogComponent } from '../../dialogs/horario-dialog/horario-dialog.component';
+import { HorarioDialogComponent } from '../../dialogs/horario-dialog/horario-dialog.components';
 
 @Component({
   selector: 'app-horarios-management',

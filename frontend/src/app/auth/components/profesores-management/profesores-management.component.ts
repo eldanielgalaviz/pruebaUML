@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AdminService } from '../../services/admin.service';
-import { ProfesorDialogComponent } from '../../dialogs/profesor-dialog/profesor-dialog.component';
+import { AdminService } from '../../../admin/services/admin.service';
+import { ProfesorDialogComponent } from '../../../admin/dialogs/profesor-dialog/profesor-dialog.component';
 
 @Component({
   selector: 'app-profesores-management',
