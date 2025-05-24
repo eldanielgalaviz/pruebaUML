@@ -203,9 +203,20 @@ export class AsistenciasManagementComponent implements OnInit {
   }
 
   loadAsistencias(): void {
-    // Por ahora mostrar mensaje de desarrollo
-    this.showMessage('Funcionalidad en desarrollo');
-    this.asistencias = [];
+    const params: any = {};
+    if (this.fechaInicio) params.fechaInicio = this.fechaInicio;
+    if (this.fechaFin) params.fechaFin = this.fechaFin;
+    if (this.profesorIdFiltro) params.profesorId = this.profesorIdFiltro;
+
+    this.adminService.getAsistencias(params.fechaInicio, params.fechaFin, params.profesorId).subscribe({
+      next: (asistencias) => {
+        this.asistencias = asistencias;
+      },
+      error: (error) => {
+        console.error('Error al cargar asistencias:', error);
+        this.showMessage('Error al cargar asistencias');
+      }
+    });
   }
 
   openDialog(asistencia?: any): void {
@@ -227,7 +238,16 @@ export class AsistenciasManagementComponent implements OnInit {
 
   deleteAsistencia(asistencia: any): void {
     if (confirm(`¿Está seguro de eliminar este registro de asistencia?`)) {
-      this.showMessage('Funcionalidad en desarrollo');
+      this.adminService.deleteAsistencia(asistencia.id).subscribe({
+        next: () => {
+          this.showMessage('Asistencia eliminada correctamente');
+          this.loadAsistencias();
+        },
+        error: (error) => {
+          console.error('Error al eliminar asistencia:', error);
+          this.showMessage('Error al eliminar asistencia');
+        }
+      });
     }
   }
 

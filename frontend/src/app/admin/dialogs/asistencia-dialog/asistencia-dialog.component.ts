@@ -202,23 +202,41 @@ export class AsistenciaDialogComponent implements OnInit {
   }
 
   loadHorariosDelProfesor(profesorId: number): void {
-    // Por ahora simular datos
-    this.horariosDelProfesor = [];
-    console.log('Cargando horarios para profesor:', profesorId);
+    this.adminService.getHorariosDelProfesor(profesorId).subscribe({
+      next: (horarios) => {
+        this.horariosDelProfesor = horarios;
+      },
+      error: (error) => {
+        console.error('Error al cargar horarios del profesor:', error);
+      }
+    });
   }
 
   onSave(): void {
     if (this.asistenciaForm.valid) {
       const asistenciaData = this.asistenciaForm.value;
       
-      // Por ahora solo mostrar mensaje de desarrollo
-      this.showMessage('Funcionalidad en desarrollo');
-      console.log('Datos de asistencia:', asistenciaData);
-      
-      // Simular guardado exitoso
-      setTimeout(() => {
-        this.dialogRef.close(asistenciaData);
-      }, 1000);
+      const request = this.data ? 
+        this.adminService.updateAsistencia(this.data.id, asistenciaData) :
+        this.adminService.createAsistencia(asistenciaData);
+
+      request.subscribe({
+        next: (result) => {
+          const mensaje = this.data ? 'Asistencia actualizada correctamente' : 'Asistencia registrada correctamente';
+          this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
+          this.dialogRef.close(result);
+        },
+        error: (error) => {
+          console.error('Error al guardar asistencia:', error);
+          let mensaje = 'Error al guardar asistencia';
+          
+          if (error.error?.message) {
+            mensaje = error.error.message;
+          }
+          
+          this.snackBar.open(mensaje, 'Cerrar', { duration: 5000 });
+        }
+      });
     }
   }
 

@@ -1,4 +1,4 @@
-// frontend/src/app/admin/dialogs/profesor-dialog/profesor-dialog.component.ts
+// frontend/src/app/admin/dialogs/alumno-dialog/alumno-dialog.component.ts
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -6,12 +6,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from '../../services/admin.service';
 
 @Component({
-  selector: 'app-profesor-dialog',
+  selector: 'app-alumno-dialog',
   template: `
-    <h2 mat-dialog-title>{{ data ? 'Editar Profesor' : 'Nuevo Profesor' }}</h2>
+    <h2 mat-dialog-title>{{ data ? 'Editar Alumno' : 'Nuevo Alumno' }}</h2>
     
     <mat-dialog-content>
-      <form [formGroup]="profesorForm">
+      <form [formGroup]="alumnoForm">
         <!-- Información básica del usuario -->
         <div class="section-title">Información Personal</div>
         
@@ -19,7 +19,7 @@ import { AdminService } from '../../services/admin.service';
           <mat-form-field appearance="outline">
             <mat-label>Nombre de Usuario</mat-label>
             <input matInput formControlName="username" placeholder="Nombre de usuario único">
-            <mat-error *ngIf="profesorForm.get('username')?.hasError('required')">
+            <mat-error *ngIf="alumnoForm.get('username')?.hasError('required')">
               El nombre de usuario es requerido
             </mat-error>
           </mat-form-field>
@@ -27,10 +27,10 @@ import { AdminService } from '../../services/admin.service';
           <mat-form-field appearance="outline">
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="email" placeholder="correo@ejemplo.com">
-            <mat-error *ngIf="profesorForm.get('email')?.hasError('required')">
+            <mat-error *ngIf="alumnoForm.get('email')?.hasError('required')">
               El email es requerido
             </mat-error>
-            <mat-error *ngIf="profesorForm.get('email')?.hasError('email')">
+            <mat-error *ngIf="alumnoForm.get('email')?.hasError('email')">
               Ingrese un email válido
             </mat-error>
           </mat-form-field>
@@ -40,7 +40,7 @@ import { AdminService } from '../../services/admin.service';
           <mat-form-field appearance="outline">
             <mat-label>Nombre</mat-label>
             <input matInput formControlName="nombre" placeholder="Nombre(s)">
-            <mat-error *ngIf="profesorForm.get('nombre')?.hasError('required')">
+            <mat-error *ngIf="alumnoForm.get('nombre')?.hasError('required')">
               El nombre es requerido
             </mat-error>
           </mat-form-field>
@@ -48,7 +48,7 @@ import { AdminService } from '../../services/admin.service';
           <mat-form-field appearance="outline">
             <mat-label>Apellido Paterno</mat-label>
             <input matInput formControlName="apellidoPaterno" placeholder="Apellido paterno">
-            <mat-error *ngIf="profesorForm.get('apellidoPaterno')?.hasError('required')">
+            <mat-error *ngIf="alumnoForm.get('apellidoPaterno')?.hasError('required')">
               El apellido paterno es requerido
             </mat-error>
           </mat-form-field>
@@ -58,7 +58,7 @@ import { AdminService } from '../../services/admin.service';
           <mat-form-field appearance="outline">
             <mat-label>Apellido Materno</mat-label>
             <input matInput formControlName="apellidoMaterno" placeholder="Apellido materno">
-            <mat-error *ngIf="profesorForm.get('apellidoMaterno')?.hasError('required')">
+            <mat-error *ngIf="alumnoForm.get('apellidoMaterno')?.hasError('required')">
               El apellido materno es requerido
             </mat-error>
           </mat-form-field>
@@ -66,34 +66,46 @@ import { AdminService } from '../../services/admin.service';
           <mat-form-field appearance="outline">
             <mat-label>Fecha de Nacimiento</mat-label>
             <input matInput type="date" formControlName="fechaNacimiento">
-            <mat-error *ngIf="profesorForm.get('fechaNacimiento')?.hasError('required')">
+            <mat-error *ngIf="alumnoForm.get('fechaNacimiento')?.hasError('required')">
               La fecha de nacimiento es requerida
             </mat-error>
           </mat-form-field>
         </div>
 
-        <!-- Información específica del profesor -->
+        <!-- Información específica del alumno -->
         <div class="section-title">Información Académica</div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>ID del Profesor</mat-label>
-          <input matInput formControlName="idProfesor" placeholder="Ej: PROF001">
-          <mat-error *ngIf="profesorForm.get('idProfesor')?.hasError('required')">
-            El ID del profesor es requerido
-          </mat-error>
-        </mat-form-field>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Matrícula</mat-label>
+            <input matInput formControlName="matricula" placeholder="Ej: 2024001">
+            <mat-error *ngIf="alumnoForm.get('matricula')?.hasError('required')">
+              La matrícula es requerida
+            </mat-error>
+          </mat-form-field>
 
-        <!-- Contraseñas (solo para nuevo profesor) -->
+          <mat-form-field appearance="outline">
+            <mat-label>Grupo (Opcional)</mat-label>
+            <mat-select formControlName="grupoId">
+              <mat-option [value]="null">Sin grupo asignado</mat-option>
+              <mat-option *ngFor="let grupo of grupos" [value]="grupo.id">
+                {{ grupo.codigo }} - {{ grupo.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Contraseñas (solo para nuevo alumno) -->
         <div *ngIf="!data" class="section-title">Credenciales de Acceso</div>
         
         <div *ngIf="!data" class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>Contraseña</mat-label>
             <input matInput type="password" formControlName="password" placeholder="Mínimo 6 caracteres">
-            <mat-error *ngIf="profesorForm.get('password')?.hasError('required')">
+            <mat-error *ngIf="alumnoForm.get('password')?.hasError('required')">
               La contraseña es requerida
             </mat-error>
-            <mat-error *ngIf="profesorForm.get('password')?.hasError('minlength')">
+            <mat-error *ngIf="alumnoForm.get('password')?.hasError('minlength')">
               La contraseña debe tener al menos 6 caracteres
             </mat-error>
           </mat-form-field>
@@ -101,10 +113,10 @@ import { AdminService } from '../../services/admin.service';
           <mat-form-field appearance="outline">
             <mat-label>Confirmar Contraseña</mat-label>
             <input matInput type="password" formControlName="confirmPassword" placeholder="Repetir contraseña">
-            <mat-error *ngIf="profesorForm.get('confirmPassword')?.hasError('required')">
+            <mat-error *ngIf="alumnoForm.get('confirmPassword')?.hasError('required')">
               Debe confirmar la contraseña
             </mat-error>
-            <mat-error *ngIf="profesorForm.get('confirmPassword')?.hasError('passwordMismatch')">
+            <mat-error *ngIf="alumnoForm.get('confirmPassword')?.hasError('passwordMismatch')">
               Las contraseñas no coinciden
             </mat-error>
           </mat-form-field>
@@ -114,8 +126,8 @@ import { AdminService } from '../../services/admin.service';
 
     <mat-dialog-actions>
       <button mat-button (click)="onCancel()">Cancelar</button>
-      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!profesorForm.valid">
-        {{ data ? 'Actualizar' : 'Crear Profesor' }}
+      <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!alumnoForm.valid">
+        {{ data ? 'Actualizar' : 'Crear Alumno' }}
       </button>
     </mat-dialog-actions>
   `,
@@ -155,51 +167,67 @@ import { AdminService } from '../../services/admin.service';
     }
   `]
 })
-export class ProfesorDialogComponent implements OnInit {
-  profesorForm: FormGroup;
+export class AlumnoDialogComponent implements OnInit {
+  alumnoForm: FormGroup;
+  grupos: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private adminService: AdminService,
     private snackBar: MatSnackBar,
-    public dialogRef: MatDialogRef<ProfesorDialogComponent>,
+    public dialogRef: MatDialogRef<AlumnoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.profesorForm = this.fb.group({
+    this.alumnoForm = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       nombre: ['', Validators.required],
       apellidoPaterno: ['', Validators.required],
       apellidoMaterno: ['', Validators.required],
       fechaNacimiento: ['', Validators.required],
-      idProfesor: ['', Validators.required],
+      matricula: ['', Validators.required],
+      grupoId: [null],
       password: [''],
       confirmPassword: ['']
     });
 
-    // Solo requerir contraseñas para nuevos profesores
+    // Solo requerir contraseñas para nuevos alumnos
     if (!this.data) {
-      this.profesorForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
-      this.profesorForm.get('confirmPassword')?.setValidators([Validators.required]);
+      this.alumnoForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.alumnoForm.get('confirmPassword')?.setValidators([Validators.required]);
     }
 
     // Validador personalizado para contraseñas coincidentes
-    this.profesorForm.setValidators(this.passwordMatchValidator);
+    this.alumnoForm.setValidators(this.passwordMatchValidator);
   }
 
   ngOnInit(): void {
+    this.loadGrupos();
+    
     if (this.data) {
-      // Editando profesor existente
-      this.profesorForm.patchValue({
+      // Editando alumno existente
+      this.alumnoForm.patchValue({
         username: this.data.usuario?.username,
         email: this.data.usuario?.email,
         nombre: this.data.usuario?.nombre,
         apellidoPaterno: this.data.usuario?.apellidoPaterno,
         apellidoMaterno: this.data.usuario?.apellidoMaterno,
         fechaNacimiento: this.data.usuario?.fechaNacimiento,
-        idProfesor: this.data.idProfesor
+        matricula: this.data.matricula,
+        grupoId: this.data.grupoId
       });
     }
+  }
+
+  loadGrupos(): void {
+    this.adminService.getGrupos().subscribe({
+      next: (grupos) => {
+        this.grupos = grupos;
+      },
+      error: (error) => {
+        console.error('Error al cargar grupos:', error);
+      }
+    });
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -215,22 +243,22 @@ export class ProfesorDialogComponent implements OnInit {
   }
 
   onSave(): void {
-    if (this.profesorForm.valid) {
-      const profesorData = this.profesorForm.value;
+    if (this.alumnoForm.valid) {
+      const alumnoData = this.alumnoForm.value;
       
       const request = this.data ? 
-        this.adminService.updateProfesor(this.data.id, profesorData) :
-        this.adminService.createProfesor(profesorData);
+        this.adminService.updateAlumno(this.data.id, alumnoData) :
+        this.adminService.createAlumno(alumnoData);
 
       request.subscribe({
         next: (result) => {
-          const mensaje = this.data ? 'Profesor actualizado correctamente' : 'Profesor creado correctamente';
+          const mensaje = this.data ? 'Alumno actualizado correctamente' : 'Alumno creado correctamente';
           this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
           this.dialogRef.close(result);
         },
         error: (error) => {
-          console.error('Error al guardar profesor:', error);
-          let mensaje = 'Error al guardar profesor';
+          console.error('Error al guardar alumno:', error);
+          let mensaje = 'Error al guardar alumno';
           
           if (error.error?.message) {
             if (Array.isArray(error.error.message)) {

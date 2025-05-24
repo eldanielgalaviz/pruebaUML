@@ -23,38 +23,47 @@ import { MatChipsModule } from '@angular/material/chips';
 
 import { AdminRoutingModule } from './admin-routing.module';
 
-// Componentes que EXISTEN
+// Componentes principales
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { GruposManagementComponent } from './components/grupos-management/grupos-management.component';
-import { GrupoDialogComponent } from './dialogs/grupo-dialog/grupo-dialog.component';
-
-// Componentes que FALTAN - los vamos a crear
 import { HorariosManagementComponent } from './components/horarios-management/horarios-management.component';
 import { AulasManagementComponent } from './components/aulas-management/aulas-management.component';
 import { AlumnosManagementComponent } from './components/alumnos-management/alumnos-management.component';
 import { ProfesoresManagementComponent } from './components/profesores-management/profesores-management.component';
 import { AsistenciasManagementComponent } from './components/asistencias-management/asistencias-management.component';
+
+// Diálogos
+import { GrupoDialogComponent } from './dialogs/grupo-dialog/grupo-dialog.component';
+import { HorarioDialogComponent } from './dialogs/alumno-dialog/alumno-dialog.component';
+import { AulaDialogComponent } from './dialogs/aula-dialog/aula-dialog.component';
+import { AlumnoDialogComponent } from './dialogs/alumno-dialog/alumno-dialog.component';
+import { ProfesorDialogComponent } from './dialogs/profesor-dialog/profesor-dialog.component';
 import { AsistenciaDialogComponent } from './dialogs/asistencia-dialog/asistencia-dialog.component';
+import { AsignacionGrupoDialogComponent } from './dialogs/asignacion-grupo-dialog/asignacion-grupo-dialog.component';
 
 @NgModule({
   declarations: [
-    // Componentes existentes
+    // Componentes principales
     AdminDashboardComponent,
     GruposManagementComponent,
-    GrupoDialogComponent,
-    
-    // Componentes que faltaban
     HorariosManagementComponent,
     AulasManagementComponent,
     AlumnosManagementComponent,
     ProfesoresManagementComponent,
     AsistenciasManagementComponent,
-    AsistenciaDialogComponent
+    
+    // Diálogos
+    GrupoDialogComponent,
+    AulaDialogComponent,
+    AlumnoDialogComponent,
+    ProfesorDialogComponent,
+    AsistenciaDialogComponent,
+    AsignacionGrupoDialogComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule, // AÑADIDO para ngModel
+    FormsModule, // Para ngModel
     
     // Material Modules
     MatTableModule,
@@ -71,8 +80,8 @@ import { AsistenciaDialogComponent } from './dialogs/asistencia-dialog/asistenci
     MatToolbarModule,
     MatPaginatorModule,
     MatTooltipModule,
-    MatRadioModule, // AÑADIDO para mat-radio-group
-    MatChipsModule, // AÑADIDO para mat-chip
+    MatRadioModule,
+    MatChipsModule,
     
     AdminRoutingModule
   ]

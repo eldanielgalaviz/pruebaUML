@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from '../../services/admin.service';
+import { AulaDialogComponent } from '../../dialogs/aula-dialog/aula-dialog.component';
 
 @Component({
   selector: 'app-aulas-management',
@@ -27,11 +28,65 @@ import { AdminService } from '../../services/admin.service';
             <mat-card-subtitle>Administra las aulas del sistema</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
-            <div class="temp-message">
-              <h3>Sección en Desarrollo</h3>
-              <p>La gestión de aulas estará disponible próximamente.</p>
-              <button mat-raised-button color="primary" (click)="goBack()">
-                Volver al Panel
+            <table mat-table [dataSource]="aulas" class="mat-elevation-z2">
+              <!-- Columna Número -->
+              <ng-container matColumnDef="numero">
+                <th mat-header-cell *matHeaderCellDef>Número</th>
+                <td mat-cell *matCellDef="let aula">{{ aula.numero }}</td>
+              </ng-container>
+
+              <!-- Columna Capacidad -->
+              <ng-container matColumnDef="capacidad">
+                <th mat-header-cell *matHeaderCellDef>Capacidad</th>
+                <td mat-cell *matCellDef="let aula">
+                  <mat-chip color="primary" selected>
+                    <mat-icon>people</mat-icon>
+                    {{ aula.capacidad }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Columna Ubicación -->
+              <ng-container matColumnDef="ubicacion">
+                <th mat-header-cell *matHeaderCellDef>Ubicación</th>
+                <td mat-cell *matCellDef="let aula">{{ aula.ubicacion || '-' }}</td>
+              </ng-container>
+
+              <!-- Columna Estado -->
+              <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef>Estado</th>
+                <td mat-cell *matCellDef="let aula">
+                  <mat-chip [color]="aula.activa ? 'primary' : 'warn'" selected>
+                    {{ aula.activa ? 'Activa' : 'Inactiva' }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Columna Acciones -->
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let aula">
+                  <button mat-icon-button (click)="editAula(aula)" matTooltip="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="viewHorarios(aula)" matTooltip="Ver Horarios">
+                    <mat-icon>schedule</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="deleteAula(aula)" matTooltip="Eliminar">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+
+            <div *ngIf="aulas.length === 0" class="no-data">
+              <mat-icon>meeting_room</mat-icon>
+              <p>No hay aulas registradas</p>
+              <button mat-raised-button color="primary" (click)="openDialog()">
+                Crear primera aula
               </button>
             </div>
           </mat-card-content>
@@ -46,14 +101,23 @@ import { AdminService } from '../../services/admin.service';
     }
     .spacer { flex: 1 1 auto; }
     .content { padding: 20px; }
-    .temp-message {
+    table { width: 100%; }
+    .no-data {
       text-align: center;
       padding: 40px;
       color: #666;
     }
+    .no-data mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 20px;
+    }
   `]
 })
 export class AulasManagementComponent implements OnInit {
+  aulas: any[] = [];
+  displayedColumns: string[] = ['numero', 'capacidad', 'ubicacion', 'estado', 'acciones'];
 
   constructor(
     private adminService: AdminService,
@@ -62,10 +126,55 @@ export class AulasManagementComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.loadAulas();
   }
 
-  openDialog(): void {
-    this.showMessage('Funcionalidad en desarrollo');
+  loadAulas(): void {
+    this.adminService.getAulas().subscribe({
+      next: (aulas) => {
+        this.aulas = aulas;
+      },
+      error: (error) => {
+        console.error('Error al cargar aulas:', error);
+        this.showMessage('Error al cargar aulas');
+      }
+    });
+  }
+
+  openDialog(aula?: any): void {
+    const dialogRef = this.dialog.open(AulaDialogComponent, {
+      width: '500px',
+      data: aula
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadAulas();
+      }
+    });
+  }
+
+  editAula(aula: any): void {
+    this.openDialog(aula);
+  }
+
+  viewHorarios(aula: any): void {
+    this.showMessage(`Ver horarios del aula ${aula.numero} - Funcionalidad en desarrollo`);
+  }
+
+  deleteAula(aula: any): void {
+    if (confirm(`¿Está seguro de eliminar el aula ${aula.numero}?`)) {
+      this.adminService.deleteAula(aula.id).subscribe({
+        next: () => {
+          this.showMessage('Aula eliminada correctamente');
+          this.loadAulas();
+        },
+        error: (error) => {
+          console.error('Error al eliminar aula:', error);
+          this.showMessage('Error al eliminar aula');
+        }
+      });
+    }
   }
 
   goBack(): void {
