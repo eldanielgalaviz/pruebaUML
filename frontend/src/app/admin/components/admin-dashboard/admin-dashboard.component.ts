@@ -15,36 +15,8 @@ import { Router, ActivatedRoute } from '@angular/router';
         </button>
       </mat-toolbar>
 
-      <!-- Mostrar mensaje si está en ruta "en desarrollo" -->
-      <div *ngIf="isTemporaryRoute()" class="temp-message">
-        <mat-card>
-          <mat-card-header>
-            <mat-icon mat-card-avatar color="warn">construction</mat-icon>
-            <mat-card-title>Sección en Desarrollo</mat-card-title>
-            <mat-card-subtitle>{{ getSectionName() }}</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <p>Esta funcionalidad está en desarrollo. Funcionalidades disponibles:</p>
-            <ul>
-              <li><strong>Gestión de Grupos</strong> - Completamente funcional</li>
-              <li><strong>Gestión de Asistencias</strong> - Interfaz básica disponible</li>
-              <li>Otras secciones se implementarán próximamente</li>
-            </ul>
-          </mat-card-content>
-          <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="navigateTo('grupos')">
-              Ir a Gestión de Grupos
-            </button>
-            <button mat-raised-button color="accent" (click)="navigateTo('asistencias')">
-              Ver Asistencias
-            </button>
-            <button mat-button (click)="goBack()">Volver</button>
-          </mat-card-actions>
-        </mat-card>
-      </div>
-
-      <!-- Dashboard principal cuando está en /admin -->
-      <div *ngIf="!isTemporaryRoute()" class="dashboard-content">
+      <!-- Dashboard principal -->
+      <div class="dashboard-content">
         <div class="admin-cards">
           <mat-card class="admin-card" (click)="navigateTo('grupos')">
             <mat-card-header>
@@ -67,66 +39,66 @@ import { Router, ActivatedRoute } from '@angular/router';
               <mat-card-subtitle>Control de asistencias y reportes</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <p>🔄 <strong>Interfaz Básica</strong> - Controla asistencias, genera reportes y estadísticas.</p>
+              <p>✅ <strong>Funcional</strong> - Controla asistencias, genera reportes y estadísticas.</p>
             </mat-card-content>
             <mat-card-actions>
               <button mat-raised-button color="accent">Ver Asistencias</button>
             </mat-card-actions>
           </mat-card>
 
-          <mat-card class="admin-card disabled" (click)="showComingSoon('Horarios')">
+          <mat-card class="admin-card" (click)="navigateTo('horarios')">
             <mat-card-header>
-              <mat-icon mat-card-avatar>schedule</mat-icon>
+              <mat-icon mat-card-avatar color="primary">schedule</mat-icon>
               <mat-card-title>Gestionar Horarios</mat-card-title>
               <mat-card-subtitle>Crear y asignar horarios de clases</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <p>🚧 <em>En desarrollo</em> - Crea horarios, asigna profesores y aulas, verifica conflictos.</p>
+              <p>✅ <strong>Funcional</strong> - Crea horarios, asigna profesores y aulas, verifica conflictos.</p>
             </mat-card-content>
             <mat-card-actions>
-              <button mat-raised-button disabled>Próximamente</button>
+              <button mat-raised-button color="primary">Gestionar</button>
             </mat-card-actions>
           </mat-card>
 
-          <mat-card class="admin-card disabled" (click)="showComingSoon('Aulas')">
+          <mat-card class="admin-card" (click)="navigateTo('aulas')">
             <mat-card-header>
-              <mat-icon mat-card-avatar>meeting_room</mat-icon>
+              <mat-icon mat-card-avatar color="primary">meeting_room</mat-icon>
               <mat-card-title>Gestionar Aulas</mat-card-title>
               <mat-card-subtitle>Administrar espacios físicos</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <p>🚧 <em>En desarrollo</em> - Registra aulas, define capacidades y verifica disponibilidad.</p>
+              <p>✅ <strong>Funcional</strong> - Registra aulas, define capacidades y verifica disponibilidad.</p>
             </mat-card-content>
             <mat-card-actions>
-              <button mat-raised-button disabled>Próximamente</button>
+              <button mat-raised-button color="primary">Gestionar</button>
             </mat-card-actions>
           </mat-card>
 
-          <mat-card class="admin-card disabled" (click)="showComingSoon('Alumnos')">
+          <mat-card class="admin-card" (click)="navigateTo('alumnos')">
             <mat-card-header>
-              <mat-icon mat-card-avatar>school</mat-icon>
+              <mat-icon mat-card-avatar color="primary">school</mat-icon>
               <mat-card-title>Gestionar Alumnos</mat-card-title>
               <mat-card-subtitle>Administrar estudiantes</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <p>🚧 <em>En desarrollo</em> - Registra alumnos, asigna a grupos y gestiona información académica.</p>
+              <p>✅ <strong>Funcional</strong> - Registra alumnos, asigna a grupos y gestiona información académica.</p>
             </mat-card-content>
             <mat-card-actions>
-              <button mat-raised-button disabled>Próximamente</button>
+              <button mat-raised-button color="primary">Gestionar</button>
             </mat-card-actions>
           </mat-card>
 
-          <mat-card class="admin-card disabled" (click)="showComingSoon('Profesores')">
+          <mat-card class="admin-card" (click)="navigateTo('profesores')">
             <mat-card-header>
-              <mat-icon mat-card-avatar>person</mat-icon>
+              <mat-icon mat-card-avatar color="primary">person</mat-icon>
               <mat-card-title>Gestionar Profesores</mat-card-title>
               <mat-card-subtitle>Administrar docentes</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <p>🚧 <em>En desarrollo</em> - Registra profesores, asigna materias y gestiona horarios docentes.</p>
+              <p>✅ <strong>Funcional</strong> - Registra profesores, asigna materias y gestiona horarios docentes.</p>
             </mat-card-content>
             <mat-card-actions>
-              <button mat-raised-button disabled>Próximamente</button>
+              <button mat-raised-button color="primary">Gestionar</button>
             </mat-card-actions>
           </mat-card>
         </div>
@@ -147,19 +119,6 @@ import { Router, ActivatedRoute } from '@angular/router';
       padding: 20px;
     }
 
-    .temp-message {
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 60vh;
-    }
-
-    .temp-message mat-card {
-      max-width: 600px;
-      text-align: center;
-    }
-
     .admin-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -173,14 +132,9 @@ import { Router, ActivatedRoute } from '@angular/router';
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
-    .admin-card:not(.disabled):hover {
+    .admin-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    }
-
-    .admin-card.disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
     }
 
     .admin-card mat-card-header {
@@ -201,7 +155,6 @@ import { Router, ActivatedRoute } from '@angular/router';
   `]
 })
 export class AdminDashboardComponent implements OnInit {
-  private currentRoute: string = '';
 
   constructor(
     private router: Router,
@@ -209,7 +162,6 @@ export class AdminDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.currentRoute = this.router.url;
   }
 
   navigateTo(section: string): void {
@@ -218,24 +170,5 @@ export class AdminDashboardComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/dashboard']);
-  }
-
-  isTemporaryRoute(): boolean {
-    return this.router.url.includes('/admin/horarios') ||
-           this.router.url.includes('/admin/aulas') ||
-           this.router.url.includes('/admin/alumnos') ||
-           this.router.url.includes('/admin/profesores');
-  }
-
-  getSectionName(): string {
-    if (this.router.url.includes('horarios')) return 'Gestión de Horarios';
-    if (this.router.url.includes('aulas')) return 'Gestión de Aulas';
-    if (this.router.url.includes('alumnos')) return 'Gestión de Alumnos';
-    if (this.router.url.includes('profesores')) return 'Gestión de Profesores';
-    return 'Sección';
-  }
-
-  showComingSoon(section: string): void {
-    alert(`${section} - Funcionalidad en desarrollo. Actualmente disponible: Gestión de Grupos y Asistencias (interfaz básica).`);
   }
 }

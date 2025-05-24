@@ -1,0 +1,99 @@
+// 1. frontend/src/app/profesor/profesor-horarios/profesor-horarios.component.html
+<div class="horarios-container">
+  <mat-toolbar color="primary">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span>Mis Horarios</span>
+    <span class="spacer"></span>
+    <span>{{ profesorInfo?.nombre }}</span>
+  </mat-toolbar>
+
+  <div class="content" *ngIf="!loading">
+    <!-- Información del profesor -->
+    <mat-card class="profesor-info">
+      <mat-card-header>
+        <mat-card-title>Información del Profesor</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>ID Profesor:</strong> {{ profesorInfo?.idProfesor }}</p>
+        <p><strong>Nombre:</strong> {{ profesorInfo?.nombre }} {{ profesorInfo?.apellidoPaterno }}</p>
+        <p><strong>Total de horas:</strong> {{ horarios.length }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Horarios por día -->
+    <div class="horarios-semana">
+      <mat-card *ngFor="let dia of diasSemana" class="dia-card">
+        <mat-card-header>
+          <mat-card-title>{{ dia.nombre }}</mat-card-title>
+          <mat-card-subtitle>{{ dia.horarios.length }} clases</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="dia.horarios.length === 0" class="no-clases">
+            Sin clases programadas
+          </div>
+          <div *ngFor="let horario of dia.horarios" class="horario-item">
+            <div class="horario-time">
+              <mat-icon>schedule</mat-icon>
+              {{ horario.horaInicio }} - {{ horario.horaFin }}
+            </div>
+            <div class="horario-details">
+              <h4>{{ horario.materia }}</h4>
+              <p>
+                <mat-icon>group</mat-icon>
+                {{ horario.grupo?.nombre }}
+              </p>
+              <p>
+                <mat-icon>meeting_room</mat-icon>
+                Aula {{ horario.aula?.numero }}
+              </p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Resumen estadístico -->
+    <mat-card class="estadisticas">
+      <mat-card-header>
+        <mat-card-title>Resumen Semanal</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-number">{{ horarios.length }}</span>
+            <span class="stat-label">Total Horas</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalMaterias() }}</span>
+            <span class="stat-label">Materias</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalGrupos() }}</span>
+            <span class="stat-label">Grupos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalAulas() }}</span>
+            <span class="stat-label">Aulas</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Cargando horarios...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadHorarios()">
+      Reintentar
+    </button>
+  </div>
+</div>

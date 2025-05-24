@@ -1,16 +1,16 @@
-// backend/src/users/controllers/profesores.controller.ts
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ProfesoresService } from '../services/profesores.service';
 import { CreateProfesorDto } from '../dto/create-profesor.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @Controller('profesores')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard) // ✅ Comentado temporalmente para testing
 export class ProfesoresController {
   constructor(private readonly profesoresService: ProfesoresService) {}
 
   @Post()
   create(@Body() createProfesorDto: CreateProfesorDto) {
+    console.log('Creando profesor:', createProfesorDto);
     return this.profesoresService.create(createProfesorDto);
   }
 

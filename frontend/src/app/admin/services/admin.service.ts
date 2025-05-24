@@ -1,4 +1,4 @@
-// frontend/src/app/admin/services/admin.service.ts
+// frontend/src/app/admin/services/admin.service.ts - CORREGIDO
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,194 +7,194 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:3005/api';
+  private apiUrl = 'http://localhost:3005/api'; // ✅ Cambiar base URL
 
   constructor(private http: HttpClient) {}
 
-  // GESTIÓN DE GRUPOS
+  // GESTIÓN DE GRUPOS - ✅ CORREGIDO
   getGrupos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/grupos`);
+    return this.http.get<any[]>(`${this.apiUrl}/grupos`);
   }
 
   getGrupo(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/academic/grupos/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/grupos/${id}`);
   }
 
   createGrupo(grupo: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/academic/grupos`, grupo);
+    return this.http.post<any>(`${this.apiUrl}/grupos`, grupo);
   }
 
   updateGrupo(id: number, grupo: any): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/academic/grupos/${id}`, grupo);
+    return this.http.patch<any>(`${this.apiUrl}/grupos/${id}`, grupo);
   }
 
   deleteGrupo(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/academic/grupos/${id}`);
+    return this.http.delete(`${this.apiUrl}/grupos/${id}`);
   }
 
-  // GESTIÓN DE HORARIOS
+  // GESTIÓN DE HORARIOS - ✅ CORREGIDO
   getHorarios(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/horarios`);
+    return this.http.get<any[]>(`${this.apiUrl}/horarios`);
   }
 
   getHorario(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/academic/horarios/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/horarios/${id}`);
   }
 
   createHorario(horario: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/academic/horarios`, horario);
+    return this.http.post<any>(`${this.apiUrl}/horarios`, horario);
   }
 
   updateHorario(id: number, horario: any): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/academic/horarios/${id}`, horario);
+    return this.http.patch<any>(`${this.apiUrl}/horarios/${id}`, horario);
   }
 
   deleteHorario(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/academic/horarios/${id}`);
+    return this.http.delete(`${this.apiUrl}/horarios/${id}`);
   }
 
   getHorariosByGrupo(grupoId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/horarios/by-grupo/${grupoId}`);
+    return this.http.get<any[]>(`${this.apiUrl}/horarios/grupo/${grupoId}`);
   }
 
   getHorariosByProfesor(profesorId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/horarios/by-profesor/${profesorId}`);
+    return this.http.get<any[]>(`${this.apiUrl}/horarios/profesor/${profesorId}`);
   }
 
   checkConflictosHorario(dia: string, horaInicio: string, horaFin: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/horarios/conflicts`, {
+    return this.http.get<any[]>(`${this.apiUrl}/horarios/conflictos`, {
       params: { dia, horaInicio, horaFin }
     });
   }
 
-  // GESTIÓN DE AULAS
+  // GESTIÓN DE AULAS - ✅ CORREGIDO
   getAulas(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/aulas`);
+    return this.http.get<any[]>(`${this.apiUrl}/aulas`);
   }
 
   getAula(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/academic/aulas/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/aulas/${id}`);
   }
 
   createAula(aula: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/academic/aulas`, aula);
+    return this.http.post<any>(`${this.apiUrl}/aulas`, aula);
   }
 
   updateAula(id: number, aula: any): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/academic/aulas/${id}`, aula);
+    return this.http.patch<any>(`${this.apiUrl}/aulas/${id}`, aula);
   }
 
   deleteAula(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/academic/aulas/${id}`);
+    return this.http.delete(`${this.apiUrl}/aulas/${id}`);
   }
 
-  getAulasDisponibles(dia?: string, horaInicio?: string, horaFin?: string): Observable<any[]> {
-    const params: any = {};
-    if (dia) params.dia = dia;
-    if (horaInicio) params.horaInicio = horaInicio;
-    if (horaFin) params.horaFin = horaFin;
-    
-    return this.http.get<any[]>(`${this.apiUrl}/academic/aulas/disponibles`, { params });
-  }
-
-  // GESTIÓN DE ALUMNOS
+  // GESTIÓN DE ALUMNOS - ✅ CORREGIDO
   getAlumnos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/alumnos`);
-  }
-
-  getAlumno(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/academic/alumnos/${id}`);
-  }
-
-  createAlumno(alumno: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/academic/alumnos`, alumno);
-  }
-
-  updateAlumno(id: number, alumno: any): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/academic/alumnos/${id}`, alumno);
-  }
-
-  deleteAlumno(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/academic/alumnos/${id}`);
+    return this.http.get<any[]>(`${this.apiUrl}/users/alumnos/all`); // ✅ Usar endpoint existente
   }
 
   getAlumnosSinGrupo(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/alumnos/sin-grupo`);
+    // Implementar lógica para filtrar alumnos sin grupo en el frontend
+    return this.http.get<any[]>(`${this.apiUrl}/users/alumnos/all`);
   }
 
-  // GESTIÓN DE PROFESORES
+  createAlumno(alumno: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/users/alumno`, alumno); // ✅ Usar endpoint existente
+  }
+
+  // GESTIÓN DE PROFESORES - ✅ CORREGIDO
   getProfesores(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/profesores`);
-  }
-
-  getProfesor(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/academic/profesores/${id}`);
+    return this.http.get<any[]>(`${this.apiUrl}/profesores`);
   }
 
   createProfesor(profesor: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/academic/profesores`, profesor);
+    return this.http.post<any>(`${this.apiUrl}/profesores`, profesor);
   }
 
   updateProfesor(id: number, profesor: any): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/academic/profesores/${id}`, profesor);
+    return this.http.patch<any>(`${this.apiUrl}/profesores/${id}`, profesor);
   }
 
   deleteProfesor(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/academic/profesores/${id}`);
+    return this.http.delete(`${this.apiUrl}/profesores/${id}`);
   }
 
-  getHorariosDelProfesor(profesorId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/profesores/${profesorId}/horarios`);
+  // ASIGNACIONES - ✅ CORREGIDO
+  asignarAlumnoAGrupo(grupoId: number, alumnoId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/grupos/${grupoId}/alumnos/${alumnoId}`, {});
   }
 
-  // GESTIÓN DE ASISTENCIAS
+  removerAlumnoDeGrupo(grupoId: number, alumnoId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/grupos/${grupoId}/alumnos/${alumnoId}`);
+  }
+
+  getAlumnosDelGrupo(grupoId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/grupos/${grupoId}/alumnos`);
+  }
+
+  // REPORTES Y ESTADÍSTICAS - ✅ CORREGIDO
+  getOcupacionAulas(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/horarios/ocupacion-aulas`);
+  }
+
+  getHorariosSemana(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/horarios/semana`);
+  }
+
+  getEstadisticasGrupos(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/grupos/estadisticas`);
+  }
+
+  getProfesoresDisponibles(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/profesores/disponibles`);
+  }
+
+  getEstadisticasProfesores(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/profesores/estadisticas`);
+  }
+
+  // MÉTODOS ADICIONALES FALTANTES
+
+  // ALUMNOS
+  updateAlumno(id: number, alumno: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/users/${id}`, alumno);
+  }
+
+  deleteAlumno(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/users/${id}`);
+  }
+
+  // ASISTENCIAS
   getAsistencias(fechaInicio?: string, fechaFin?: string, profesorId?: number): Observable<any[]> {
-    const params: any = {};
+    let params: any = {};
     if (fechaInicio) params.fechaInicio = fechaInicio;
     if (fechaFin) params.fechaFin = fechaFin;
     if (profesorId) params.profesorId = profesorId;
     
-    return this.http.get<any[]>(`${this.apiUrl}/academic/asistencias`, { params });
+    return this.http.get<any[]>(`${this.apiUrl}/asistencias`, { params });
   }
 
   createAsistencia(asistencia: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/academic/asistencias`, asistencia);
+    return this.http.post<any>(`${this.apiUrl}/asistencias`, asistencia);
   }
 
   updateAsistencia(id: number, asistencia: any): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/academic/asistencias/${id}`, asistencia);
+    return this.http.patch<any>(`${this.apiUrl}/asistencias/${id}`, asistencia);
   }
 
   deleteAsistencia(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/academic/asistencias/${id}`);
+    return this.http.delete(`${this.apiUrl}/asistencias/${id}`);
   }
 
-  // ASIGNACIONES
-  asignarAlumnoAGrupo(grupoId: number, alumnoId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/academic/grupos/${grupoId}/alumnos`, { alumnoId });
+  // HORARIOS DE PROFESOR
+  getHorariosDelProfesor(profesorId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/horarios/profesor/${profesorId}`);
   }
 
-  removerAlumnoDeGrupo(grupoId: number, alumnoId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/academic/grupos/${grupoId}/alumnos/${alumnoId}`);
-  }
-
-  getAlumnosDelGrupo(grupoId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/grupos/${grupoId}/alumnos`);
-  }
-
-  // REPORTES Y ESTADÍSTICAS
+  // REPORTES DE ASISTENCIAS
   getReporteAsistencias(fechaInicio: string, fechaFin: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/academic/asistencias/reporte`, {
+    return this.http.get<any>(`${this.apiUrl}/asistencias/reporte`, {
       params: { fechaInicio, fechaFin }
     });
-  }
-
-  // USUARIOS DEL SISTEMA (para crear alumnos y profesores)
-  getUsuarios(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users`);
-  }
-
-  createUsuario(usuario: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/users`, usuario);
   }
 }

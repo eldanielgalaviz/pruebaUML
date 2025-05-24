@@ -1,4 +1,5 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+// backend/src/auth/auth.service.ts - CORREGIDO
+import { Injectable, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { EmailService } from './email.service';
@@ -7,6 +8,8 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -22,6 +25,8 @@ export class AuthService {
   }
 
   async register(createUserDto: any) {
+    this.logger.debug(`🔐 Registrando usuario: ${createUserDto.email}`);
+    
     // Validar que las contraseñas coincidan ANTES de hashear
     if (createUserDto.password !== createUserDto.confirmPassword) {
       throw new BadRequestException('Las contraseñas no coinciden');
@@ -29,27 +34,26 @@ export class AuthService {
 
     // Generar token de confirmación
     const confirmationToken = crypto.randomBytes(32).toString('hex');
-    console.log('Token generado:', confirmationToken);
     
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    console.log('Contraseña hasheada:', hashedPassword);
+    this.logger.debug(`🔒 Contraseña hasheada correctamente`);
     
     // Crear usuario con token de confirmación
     const user = await this.usersService.create({
       ...createUserDto,
       password: hashedPassword,
       confirmationToken,
-      isEmailConfirmed: false,
+      isEmailConfirmed: createUserDto.isEmailConfirmed || false,
     });
-    console.log('Usuario creado:', { id: user.id, email: user.email, rol: user.rol });
+
+    this.logger.debug(`✅ Usuario registrado: ${user.id} - ${user.email} - ${user.rol}`);
 
     // Enviar email de confirmación (opcional)
     try {
-      console.log('Intentando enviar email de confirmación');
       await this.emailService.sendConfirmationEmail(user.email, confirmationToken);
-      console.log('Email de confirmación enviado');
+      this.logger.debug('📧 Email de confirmación enviado');
     } catch (error) {
-      console.warn('No se pudo enviar el email de confirmación:', error.message);
+      this.logger.warn(`⚠️ No se pudo enviar email: ${error.message}`);
     }
 
     return { 
@@ -74,7 +78,7 @@ export class AuthService {
 
       return { message: 'Email verificado correctamente' };
     } catch (error) {
-      console.error('Error en confirmación de email:', error);
+      this.logger.error('Error en confirmación de email:', error);
       throw error;
     }
   }
@@ -120,30 +124,40 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     try {
-      console.log('Intentando validar usuario:', email);
+      this.logger.debug(`🔍 Validando usuario: ${email}`);
       const user = await this.usersService.findByEmail(email);
 
-      console.log('Usuario encontrado:', { id: user?.id, email: user?.email, rol: user?.rol });
+      this.logger.debug(`👤 Usuario encontrado:`, {
+        id: user?.id,
+        email: user?.email,
+        rol: user?.rol,
+        hasPassword: !!user?.password
+      });
+
       if (!user) {
+        this.logger.debug(`❌ Usuario no encontrado: ${email}`);
         throw new UnauthorizedException('Credenciales inválidas');
       }
 
+      this.logger.debug(`🔐 Comparando contraseñas...`);
       const isPasswordValid = await bcrypt.compare(password, user.password);
       
       if (!isPasswordValid) {
+        this.logger.debug(`❌ Contraseña incorrecta para: ${email}`);
         throw new UnauthorizedException('Credenciales inválidas');
       }
 
+      this.logger.debug(`✅ Validación exitosa para: ${email}`);
       const { password: _, ...result } = user;
       return result;
     } catch (error) {
-      console.error('Error en validación:', error);
+      this.logger.error(`💥 Error en validación:`, error.message);
       throw error;
     }
   }
 
   async login(loginDto: { email: string; password: string }) {
-    console.log('Datos de login recibidos:', loginDto);
+    this.logger.debug(`🚀 Login para: ${loginDto.email}`);
     const user = await this.validateUser(loginDto.email, loginDto.password);
 
     const payload = {
@@ -155,6 +169,7 @@ export class AuthService {
     };
 
     const token = this.jwtService.sign(payload);
+    this.logger.debug(`🎫 Token generado para: ${user.email}`);
 
     return {
       access_token: token,

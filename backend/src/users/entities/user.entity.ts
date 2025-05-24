@@ -1,3 +1,4 @@
+// backend/src/users/entities/user.entity.ts - CORREGIDO
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
@@ -49,7 +50,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false })
   isEmailConfirmed: boolean;
 
   @Column({ type: 'varchar', nullable: true })

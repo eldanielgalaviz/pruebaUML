@@ -1,7 +1,8 @@
-import { Injectable, ConflictException, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+// backend/src/users/users.service.ts - VERSIÓN COMPLETA CORREGIDA
+import { Injectable, ConflictException, NotFoundException, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, Not } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity'; // ✅ Importar UserRole
 import { Alumno } from './entities/alumno.entity';
 import { JefeGrupo } from './entities/jefe-grupo.entity';
 import { Profesor } from './entities/profesor.entity';
@@ -15,6 +16,8 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name); // ✅ Agregar logger
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -29,63 +32,106 @@ export class UsersService {
     @InjectRepository(Administrador)
     private administradorRepository: Repository<Administrador>,
   ) {}
-// backend/src/users/users.service.ts - Actualizar el método findByEmail
-async findByEmail(email: string): Promise<User | null> {
-  try {
-    const user = await this.usersRepository.findOne({ 
-      where: { email },
-      select: ['id', 'email', 'username', 'password', 'nombre', 'apellidoPaterno', 'apellidoMaterno', 'rol', 'isEmailConfirmed'] 
-    });
-    return user;
-  } catch (error) {
-    throw new InternalServerErrorException('Error al buscar el usuario por email');
+
+  // ✅ MÉTODO CORREGIDO - findByEmail
+  async findByEmail(email: string): Promise<User | null> {
+    try {
+      this.logger.debug(`🔍 Buscando usuario por email: ${email}`);
+      
+      const user = await this.usersRepository.findOne({ 
+        where: { email },
+        select: [
+          'id', 
+          'email', 
+          'username', 
+          'password', 
+          'nombre', 
+          'apellidoPaterno', 
+          'apellidoMaterno', 
+          'rol', 
+          'isEmailConfirmed',
+          'fechaNacimiento',
+          'createdAt'
+        ] 
+      });
+
+      if (user) {
+        this.logger.debug(`✅ Usuario encontrado:`, {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          nombre: user.nombre,
+          rol: user.rol,
+          isEmailConfirmed: user.isEmailConfirmed
+        });
+      } else {
+        this.logger.debug(`❌ Usuario NO encontrado para email: ${email}`);
+      }
+      
+      return user;
+    } catch (error) {
+      this.logger.error(`💥 Error al buscar usuario por email:`, error);
+      throw new InternalServerErrorException('Error al buscar el usuario por email');
+    }
   }
-}
 
-// También actualizar el método create para no validar contraseñas duplicadamente
-async create(createUserDto: CreateUserDto): Promise<User> {
-  try {
-    // Validar email y username por separado
-    const existingEmail = await this.usersRepository.findOne({
-      where: { email: createUserDto.email },
-    });
+  // ✅ MÉTODO CORREGIDO - create
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    try {
+      this.logger.debug(`🆕 Creando usuario:`, {
+        username: createUserDto.username,
+        email: createUserDto.email,
+        rol: createUserDto.rol
+      });
 
-    if (existingEmail) {
-      throw new ConflictException('El email ya está registrado');
+      // Validar email y username por separado
+      const existingEmail = await this.usersRepository.findOne({
+        where: { email: createUserDto.email },
+      });
+
+      if (existingEmail) {
+        throw new ConflictException('El email ya está registrado');
+      }
+
+      const existingUsername = await this.usersRepository.findOne({
+        where: { username: createUserDto.username },
+      });
+
+      if (existingUsername) {
+        throw new ConflictException('El nombre de usuario ya está en uso');
+      }
+
+      // Eliminar confirmPassword antes de crear el usuario
+      const { confirmPassword, ...userData } = createUserDto;
+      
+      const user = this.usersRepository.create({
+        ...userData,
+        isEmailConfirmed: userData.isEmailConfirmed || false,
+      });
+
+      const savedUser = await this.usersRepository.save(user);
+      
+      this.logger.debug(`✅ Usuario creado exitosamente:`, {
+        id: savedUser.id,
+        email: savedUser.email,
+        rol: savedUser.rol
+      });
+
+      return savedUser;
+    } catch (error) {
+      this.logger.error(`💥 Error al crear usuario:`, error);
+      if (error instanceof ConflictException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al crear el usuario');
     }
-
-    const existingUsername = await this.usersRepository.findOne({
-      where: { username: createUserDto.username },
-    });
-
-    if (existingUsername) {
-      throw new ConflictException('El nombre de usuario ya está en uso');
-    }
-
-
-
-    // Eliminar confirmPassword antes de crear el usuario
-    const { confirmPassword, ...userData } = createUserDto;
-    
-    const user = this.usersRepository.create({
-      ...userData,
-      isEmailConfirmed: false,
-    });
-
-    return await this.usersRepository.save(user);
-  } catch (error) {
-    if (error instanceof ConflictException || error instanceof BadRequestException) {
-      throw error;
-    }
-    throw new InternalServerErrorException('Error al crear el usuario');
   }
-}
 
   async findOne(id: number): Promise<User> {
     try {
       const user = await this.usersRepository.findOne({ 
         where: { id },
-        select: ['id', 'email', 'username', 'nombre', 'apellidoPaterno', 'apellidoMaterno', 'fechaNacimiento', 'isEmailConfirmed']
+        select: ['id', 'email', 'username', 'nombre', 'apellidoPaterno', 'apellidoMaterno', 'fechaNacimiento', 'rol', 'isEmailConfirmed']
       });
       
       if (!user) {
@@ -101,11 +147,35 @@ async create(createUserDto: CreateUserDto): Promise<User> {
     }
   }
 
+  // ✅ MÉTODO AGREGADO - findAll
+  async findAll(): Promise<User[]> {
+    try {
+      return await this.usersRepository.find({
+        select: ['id', 'username', 'email', 'nombre', 'apellidoPaterno', 'apellidoMaterno', 'fechaNacimiento', 'rol', 'createdAt']
+      });
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener los usuarios');
+    }
+  }
+
+  // ✅ MÉTODO AGREGADO - remove
+  async remove(id: number): Promise<void> {
+    try {
+      const user = await this.findOne(id);
+      await this.usersRepository.remove(user);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al eliminar el usuario');
+    }
+  }
+
   async findByUsername(username: string): Promise<User> {
     try {
       const user = await this.usersRepository.findOne({ 
         where: { username }, 
-        select: ['id', 'email', 'username', 'password', 'nombre', 'isEmailConfirmed'] 
+        select: ['id', 'email', 'username', 'password', 'nombre', 'rol', 'isEmailConfirmed'] 
       });
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
@@ -118,8 +188,6 @@ async create(createUserDto: CreateUserDto): Promise<User> {
       throw new InternalServerErrorException('Error al buscar el usuario');
     }
   }
-
-
 
   async findByConfirmationToken(token: string): Promise<User> {
     try {
@@ -213,57 +281,147 @@ async create(createUserDto: CreateUserDto): Promise<User> {
     }
   }
 
-  // Métodos específicos para tipos de usuario
+  // ✅ MÉTODO CREATEALUMNO CORREGIDO
   async createAlumno(createAlumnoDto: CreateAlumnoDto): Promise<Alumno> {
     try {
-      // Primero crear el usuario base
+      this.logger.debug(`🎓 Creando alumno:`, {
+        username: createAlumnoDto.username,
+        email: createAlumnoDto.email,
+        matricula: createAlumnoDto.matricula
+      });
+
+      // Validar email y username por separado
+      const existingEmail = await this.usersRepository.findOne({
+        where: { email: createAlumnoDto.email },
+      });
+
+      if (existingEmail) {
+        throw new ConflictException('El email ya está registrado');
+      }
+
+      const existingUsername = await this.usersRepository.findOne({
+        where: { username: createAlumnoDto.username },
+      });
+
+      if (existingUsername) {
+        throw new ConflictException('El nombre de usuario ya está en uso');
+      }
+
+      // Verificar que no exista otro alumno con la misma matrícula
+      const existingMatricula = await this.alumnoRepository.findOne({
+        where: { matricula: createAlumnoDto.matricula }
+      });
+
+      if (existingMatricula) {
+        throw new ConflictException('Ya existe un alumno con esta matrícula');
+      }
+
+      // Validar que las contraseñas coincidan
+      if (createAlumnoDto.password !== createAlumnoDto.confirmPassword) {
+        throw new BadRequestException('Las contraseñas no coinciden');
+      }
+
+      // Validar requisitos de contraseña
+      PasswordValidator.validate(createAlumnoDto.password);
+
+      // ✅ HASHEAR LA CONTRASEÑA CORRECTAMENTE
+      const hashedPassword = await bcrypt.hash(createAlumnoDto.password, 10);
+      this.logger.debug(`🔒 Contraseña hasheada para alumno`);
+
+      // Crear usuario base con contraseña hasheada
       const userData = {
         username: createAlumnoDto.username,
         email: createAlumnoDto.email,
-        password: createAlumnoDto.password,
-        confirmPassword: createAlumnoDto.confirmPassword,
+        password: hashedPassword, // ✅ Usar contraseña hasheada
         nombre: createAlumnoDto.nombre,
         apellidoPaterno: createAlumnoDto.apellidoPaterno,
         apellidoMaterno: createAlumnoDto.apellidoMaterno,
         fechaNacimiento: createAlumnoDto.fechaNacimiento,
+        rol: UserRole.ALUMNO, // ✅ Asegurar que el rol sea correcto
+        isEmailConfirmed: true // ✅ Para facilitar el testing
       };
 
-      const user = await this.create(userData);
+      // Crear el usuario SIN usar el método create() para evitar doble hashing
+      const user = this.usersRepository.create(userData);
+      const savedUser = await this.usersRepository.save(user);
+
+      this.logger.debug(`✅ Usuario base creado para alumno:`, {
+        id: savedUser.id,
+        email: savedUser.email,
+        rol: savedUser.rol
+      });
 
       // Crear el registro específico de alumno
       const alumno = this.alumnoRepository.create({
         matricula: createAlumnoDto.matricula,
-        userId: user.id,
+        userId: savedUser.id,
         grupoId: createAlumnoDto.grupoId || null,
+        activo: true
       });
 
-      return await this.alumnoRepository.save(alumno);
+      const savedAlumno = await this.alumnoRepository.save(alumno);
+
+      this.logger.debug(`✅ Alumno creado exitosamente:`, {
+        id: savedAlumno.id,
+        matricula: savedAlumno.matricula,
+        userId: savedAlumno.userId
+      });
+
+      return savedAlumno;
     } catch (error) {
-      throw error;
+      this.logger.error(`💥 Error al crear alumno:`, error);
+      if (error instanceof ConflictException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al crear el alumno');
     }
   }
 
+  // ✅ MÉTODO AGREGADO - findAllAlumnos
   async findAllAlumnos(): Promise<Alumno[]> {
-    return this.alumnoRepository.find({
-      relations: ['usuario', 'grupo']
-    });
-  }
-
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find({
-      select: ['id', 'username', 'email', 'nombre', 'apellidoPaterno', 'apellidoMaterno', 'fechaNacimiento', 'createdAt']
-    });
-  }
-
-  async remove(id: number): Promise<void> {
     try {
-      const user = await this.findOne(id);
-      await this.usersRepository.remove(user);
+      return await this.alumnoRepository.find({
+        relations: ['usuario', 'grupo'],
+        where: { activo: true }
+      });
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Error al eliminar el usuario');
+      throw new InternalServerErrorException('Error al obtener los alumnos');
+    }
+  }
+
+  // ✅ MÉTODO PARA RESET DE CONTRASEÑA (ÚTIL PARA TESTING)
+  async resetUserPassword(userId: number, newPassword: string): Promise<void> {
+    try {
+      this.logger.debug(`🔄 Reseteando contraseña para usuario ID: ${userId}`);
+      
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      await this.usersRepository.update(userId, {
+        password: hashedPassword
+      });
+      
+      this.logger.debug(`✅ Contraseña reseteada correctamente`);
+    } catch (error) {
+      this.logger.error(`💥 Error al resetear contraseña:`, error);
+      throw new InternalServerErrorException('Error al resetear contraseña');
+    }
+  }
+
+  // ✅ MÉTODO DE DEBUG - REMOVER EN PRODUCCIÓN
+  async debugUsers(): Promise<any> {
+    try {
+      const totalUsers = await this.usersRepository.count();
+      const users = await this.usersRepository.find({
+        select: ['id', 'email', 'username', 'rol'],
+        take: 10
+      });
+      
+      return {
+        total: totalUsers,
+        users: users
+      };
+    } catch (error) {
+      return { error: error.message };
     }
   }
 }

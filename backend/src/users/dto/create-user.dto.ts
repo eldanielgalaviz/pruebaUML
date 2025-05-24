@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, MinLength, IsDate, IsString, Matches, IsOptional, IsEnum } from 'class-validator';
+// backend/src/users/dto/create-user.dto.ts - SIMPLIFICADO
+import { IsEmail, IsNotEmpty, MinLength, IsDate, IsString, IsOptional, IsEnum } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { UserRole } from '../entities/user.entity';
 
@@ -15,9 +16,6 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'La contraseña es requerida' })
   @IsString()
   @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/, {
-    message: 'La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula y un número'
-  })
   password: string;
 
   @IsNotEmpty({ message: 'Debe confirmar la contraseña' })

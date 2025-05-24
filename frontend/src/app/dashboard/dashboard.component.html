@@ -3,7 +3,7 @@
   <mat-toolbar color="primary">
     <span>Sistema de Asistencias</span>
     <span class="spacer"></span>
-    <span>{{ currentUser?.nombre }} {{ currentUser?.apellidoPaterno }} ({{ roleLabel }})</span>
+    <span *ngIf="currentUser">{{ currentUser.nombre }} {{ currentUser.apellidoPaterno }} ({{ roleLabel }})</span>
     <button mat-button (click)="logout()">
       <mat-icon>logout</mat-icon>
       Cerrar Sesión
@@ -23,7 +23,9 @@
             <p>Ver mi horario de clases asignado</p>
           </mat-card-content>
           <mat-card-actions>
-            <button mat-raised-button color="primary">Ver Horario</button>
+            <button mat-raised-button color="primary" (click)="navigateToAlumnoHorarios()">
+              Ver Horario
+            </button>
           </mat-card-actions>
         </mat-card>
 
@@ -53,7 +55,9 @@
             <p>Ver el horario completo de mi grupo</p>
           </mat-card-content>
           <mat-card-actions>
-            <button mat-raised-button color="primary">Ver Horario Grupo</button>
+            <button mat-raised-button color="primary" (click)="navigateToJefeGrupoHorarios()">
+              Ver Horario Grupo
+            </button>
           </mat-card-actions>
         </mat-card>
 
@@ -83,7 +87,9 @@
             <p>Ver todos mis horarios asignados</p>
           </mat-card-content>
           <mat-card-actions>
-            <button mat-raised-button color="primary">Ver Mis Horarios</button>
+            <button mat-raised-button color="primary" (click)="navigateToProfesorHorarios()">
+              Ver Mis Horarios
+            </button>
           </mat-card-actions>
         </mat-card>
 
@@ -95,7 +101,9 @@
             <p>Registrar mi asistencia del día</p>
           </mat-card-content>
           <mat-card-actions>
-            <button mat-raised-button color="accent">Marcar Asistencia</button>
+            <button mat-raised-button color="accent" (click)="marcarAsistencia()">
+              Marcar Asistencia
+            </button>
           </mat-card-actions>
         </mat-card>
       </div>
@@ -125,7 +133,9 @@
             <p>Marcar asistencia a todos los maestros</p>
           </mat-card-content>
           <mat-card-actions>
-            <button mat-raised-button color="accent">Gestionar Asistencias</button>
+            <button mat-raised-button color="accent" (click)="gestionarAsistencias()">
+              Gestionar Asistencias
+            </button>
           </mat-card-actions>
         </mat-card>
       </div>
@@ -135,7 +145,7 @@
     <div *ngIf="isAdministrador" class="role-dashboard">
       <h2>Dashboard - Administrador</h2>
       <div class="dashboard-cards">
-        <mat-card class="dashboard-card">
+        <mat-card class="dashboard-card" (click)="navigateToAdmin('alumnos')">
           <mat-card-header>
             <mat-card-title>Gestionar Alumnos</mat-card-title>
           </mat-card-header>
@@ -147,7 +157,7 @@
           </mat-card-actions>
         </mat-card>
 
-        <mat-card class="dashboard-card">
+        <mat-card class="dashboard-card" (click)="navigateToAdmin('profesores')">
           <mat-card-header>
             <mat-card-title>Gestionar Profesores</mat-card-title>
           </mat-card-header>
@@ -159,7 +169,7 @@
           </mat-card-actions>
         </mat-card>
 
-        <mat-card class="dashboard-card">
+        <mat-card class="dashboard-card" (click)="navigateToAdmin('grupos')">
           <mat-card-header>
             <mat-card-title>Gestionar Grupos</mat-card-title>
           </mat-card-header>
@@ -171,7 +181,7 @@
           </mat-card-actions>
         </mat-card>
 
-        <mat-card class="dashboard-card">
+        <mat-card class="dashboard-card" (click)="navigateToAdmin('horarios')">
           <mat-card-header>
             <mat-card-title>Gestionar Horarios</mat-card-title>
           </mat-card-header>
@@ -183,7 +193,7 @@
           </mat-card-actions>
         </mat-card>
 
-        <mat-card class="dashboard-card">
+        <mat-card class="dashboard-card" (click)="navigateToAdmin('aulas')">
           <mat-card-header>
             <mat-card-title>Gestionar Aulas</mat-card-title>
           </mat-card-header>
@@ -195,7 +205,7 @@
           </mat-card-actions>
         </mat-card>
 
-        <mat-card class="dashboard-card">
+        <mat-card class="dashboard-card" (click)="navigateToAdmin('asistencias')">
           <mat-card-header>
             <mat-card-title>Reportes</mat-card-title>
           </mat-card-header>
