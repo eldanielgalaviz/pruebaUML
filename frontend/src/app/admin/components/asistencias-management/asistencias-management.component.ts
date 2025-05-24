@@ -1,3 +1,4 @@
+// frontend/src/app/admin/components/asistencias-management/asistencias-management.component.ts
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,7 +17,7 @@ import { AsistenciaDialogComponent } from '../../dialogs/asistencia-dialog/asist
         <span class="spacer"></span>
         <button mat-raised-button color="accent" (click)="openDialog()">
           <mat-icon>add</mat-icon>
-          Marcar Asistencia
+          Nueva Asistencia
         </button>
       </mat-toolbar>
 
@@ -40,12 +41,12 @@ import { AsistenciaDialogComponent } from '../../dialogs/asistencia-dialog/asist
                 <mat-select [(ngModel)]="profesorIdFiltro" (selectionChange)="loadAsistencias()">
                   <mat-option [value]="null">Todos los profesores</mat-option>
                   <mat-option *ngFor="let profesor of profesores" [value]="profesor.id">
-                    {{ profesor.usuario.nombre }} {{ profesor.usuario.apellidoPaterno }}
+                    {{ profesor.usuario?.nombre }} {{ profesor.usuario?.apellidoPaterno }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
 
-              <button mat-raised-button color="primary" (click)="clearFilters()">
+              <button mat-raised-button (click)="clearFilters()">
                 <mat-icon>clear</mat-icon>
                 Limpiar Filtros
               </button>
@@ -53,7 +54,7 @@ import { AsistenciaDialogComponent } from '../../dialogs/asistencia-dialog/asist
           </mat-card-content>
         </mat-card>
 
-        <!-- Tabla de Asistencias -->
+        <!-- Lista de Asistencias -->
         <mat-card>
           <mat-card-header>
             <mat-card-title>Registro de Asistencias</mat-card-title>
@@ -85,12 +86,12 @@ import { AsistenciaDialogComponent } from '../../dialogs/asistencia-dialog/asist
               <ng-container matColumnDef="materia">
                 <th mat-header-cell *matHeaderCellDef>Materia</th>
                 <td mat-cell *matCellDef="let asistencia">
-                  {{ asistencia.horario?.materia || 'N/A' }}
+                  {{ asistencia.horario?.materia || 'Sin horario' }}
                 </td>
               </ng-container>
 
-              <!-- Columna Asistió -->
-              <ng-container matColumnDef="asistio">
+              <!-- Columna Estado -->
+              <ng-container matColumnDef="estado">
                 <th mat-header-cell *matHeaderCellDef>Estado</th>
                 <td mat-cell *matCellDef="let asistencia">
                   <mat-chip [color]="asistencia.asistio ? 'primary' : 'warn'" selected>
@@ -112,10 +113,10 @@ import { AsistenciaDialogComponent } from '../../dialogs/asistencia-dialog/asist
               <ng-container matColumnDef="acciones">
                 <th mat-header-cell *matHeaderCellDef>Acciones</th>
                 <td mat-cell *matCellDef="let asistencia">
-                  <button mat-icon-button (click)="editAsistencia(asistencia)" matTooltip="Editar">
+                  <button mat-icon-button (click)="editAsistencia(asistencia)">
                     <mat-icon>edit</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn" (click)="deleteAsistencia(asistencia)" matTooltip="Eliminar">
+                  <button mat-icon-button color="warn" (click)="deleteAsistencia(asistencia)">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </td>
@@ -128,9 +129,6 @@ import { AsistenciaDialogComponent } from '../../dialogs/asistencia-dialog/asist
             <div *ngIf="asistencias.length === 0" class="no-data">
               <mat-icon>assignment_turned_in</mat-icon>
               <p>No hay registros de asistencia</p>
-              <button mat-raised-button color="primary" (click)="openDialog()">
-                Marcar primera asistencia
-              </button>
             </div>
           </mat-card-content>
         </mat-card>
@@ -142,51 +140,29 @@ import { AsistenciaDialogComponent } from '../../dialogs/asistencia-dialog/asist
       min-height: 100vh;
       background-color: #f5f5f5;
     }
-
-    .spacer {
-      flex: 1 1 auto;
-    }
-
-    .content {
-      padding: 20px;
-    }
-
-    .filters-card {
-      margin-bottom: 20px;
-    }
-
+    .spacer { flex: 1 1 auto; }
+    .content { padding: 20px; }
+    .filters-card { margin-bottom: 20px; }
     .filters-row {
       display: flex;
       gap: 15px;
       align-items: center;
       flex-wrap: wrap;
     }
-
     .filters-row mat-form-field {
       min-width: 200px;
     }
-
-    table {
-      width: 100%;
-    }
-
+    table { width: 100%; }
     .no-data {
       text-align: center;
       padding: 40px;
       color: #666;
     }
-
     .no-data mat-icon {
       font-size: 48px;
       width: 48px;
       height: 48px;
       margin-bottom: 20px;
-    }
-
-    mat-chip {
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
   `]
 })
@@ -196,14 +172,19 @@ export class AsistenciasManagementComponent implements OnInit {
   fechaInicio: string = '';
   fechaFin: string = '';
   profesorIdFiltro: number | null = null;
-  
-  displayedColumns: string[] = ['fecha', 'hora', 'profesor', 'materia', 'asistio', 'observaciones', 'acciones'];
+  displayedColumns: string[] = ['fecha', 'hora', 'profesor', 'materia', 'estado', 'observaciones', 'acciones'];
 
   constructor(
     private adminService: AdminService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) { }
+  ) { 
+    // Configurar fechas por defecto (último mes)
+    const today = new Date();
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+    this.fechaInicio = lastMonth.toISOString().split('T')[0];
+    this.fechaFin = today.toISOString().split('T')[0];
+  }
 
   ngOnInit(): void {
     this.loadProfesores();
@@ -222,24 +203,14 @@ export class AsistenciasManagementComponent implements OnInit {
   }
 
   loadAsistencias(): void {
-    this.adminService.getAsistencias(
-      this.fechaInicio || undefined,
-      this.fechaFin || undefined,
-      this.profesorIdFiltro || undefined
-    ).subscribe({
-      next: (asistencias) => {
-        this.asistencias = asistencias;
-      },
-      error: (error) => {
-        console.error('Error al cargar asistencias:', error);
-        this.showMessage('Error al cargar asistencias');
-      }
-    });
+    // Por ahora mostrar mensaje de desarrollo
+    this.showMessage('Funcionalidad en desarrollo');
+    this.asistencias = [];
   }
 
   openDialog(asistencia?: any): void {
     const dialogRef = this.dialog.open(AsistenciaDialogComponent, {
-      width: '600px',
+      width: '500px',
       data: asistencia
     });
 
@@ -256,16 +227,7 @@ export class AsistenciasManagementComponent implements OnInit {
 
   deleteAsistencia(asistencia: any): void {
     if (confirm(`¿Está seguro de eliminar este registro de asistencia?`)) {
-      this.adminService.deleteAsistencia(asistencia.id).subscribe({
-        next: () => {
-          this.showMessage('Asistencia eliminada correctamente');
-          this.loadAsistencias();
-        },
-        error: (error) => {
-          console.error('Error al eliminar asistencia:', error);
-          this.showMessage('Error al eliminar asistencia');
-        }
-      });
+      this.showMessage('Funcionalidad en desarrollo');
     }
   }
 
@@ -281,8 +243,6 @@ export class AsistenciasManagementComponent implements OnInit {
   }
 
   private showMessage(message: string): void {
-    this.snackBar.open(message, 'Cerrar', {
-      duration: 3000
-    });
+    this.snackBar.open(message, 'Cerrar', { duration: 3000 });
   }
 }

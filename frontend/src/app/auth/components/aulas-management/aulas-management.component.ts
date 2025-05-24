@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminService } from '../../services/admin.service';
-import { AulaDialogComponent } from '../../dialogs/aula-dialog/aula-dialog.component';
+import { AulaDialogComponent } from '.././dialogs/aula-dialog/aula-dialog.component';
 
 @Component({
   selector: 'app-aulas-management',
