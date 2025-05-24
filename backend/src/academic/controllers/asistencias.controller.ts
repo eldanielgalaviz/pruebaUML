@@ -1,3 +1,4 @@
+// backend/src/academic/controllers/asistencias.controller.ts
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Query } from '@nestjs/common';
 import { AsistenciasService } from '../services/asistencias.service';
 import { CreateAsistenciaDto } from '../dto/create-asistencia.dto';
@@ -15,21 +16,20 @@ export class AsistenciasController {
   }
 
   @Get()
-  findAll(@Query('fecha') fecha?: string, @Query('profesorId') profesorId?: number) {
+  findAll(@Query('fecha') fecha?: string, @Query('profesorId') profesorId?: string) {
     return this.asistenciasService.findAll(
-  fecha ? new Date(fecha) : undefined,
-  undefined,
-  profesorId ? parseInt(profesorId) : undefined
-);
+      fecha ? new Date(fecha) : undefined,
+      undefined,
+      profesorId ? parseInt(profesorId, 10) : undefined
+    );
   }
 
   @Get('reporte')
   generateReport(@Query('fechaInicio') fechaInicio: string, @Query('fechaFin') fechaFin: string) {
     return this.asistenciasService.generateReport(
-  new Date(fechaInicio),
-  new Date(fechaFin)
-);
-
+      new Date(fechaInicio),
+      new Date(fechaFin)
+    );
   }
 
   @Get(':id')

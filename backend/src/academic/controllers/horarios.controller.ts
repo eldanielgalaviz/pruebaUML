@@ -1,4 +1,3 @@
-// backend/src/academic/controllers/horarios.controller.ts
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Query } from '@nestjs/common';
 import { HorariosService } from '../services/horarios.service';
 import { CreateHorarioDto } from '../dto/create-horario.dto';

@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { ProfesoresService } from '../services/profesores.service';
-import { CreateProfesorAcademicDto } from '../dto/create-profesor.dto';
-import { UpdateProfesorAcademicDto } from '../dto/update-profesor-academic.dto';
+import { CreateProfesorDto } from '../dto/create-profesor.dto';
+import { UpdateProfesorDto } from '../dto/update-profesor-dto';
+// import { UpdateProfesorDto } from '../dto/update-profesor.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @Controller('academic/profesores')
@@ -10,7 +11,7 @@ export class ProfesoresController {
   constructor(private readonly profesoresService: ProfesoresService) {}
 
   @Post()
-  create(@Body() createProfesorDto: CreateProfesorAcademicDto) {
+  create(@Body() createProfesorDto: CreateProfesorDto) {
     return this.profesoresService.create(createProfesorDto);
   }
 
@@ -25,7 +26,7 @@ export class ProfesoresController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateProfesorDto: UpdateProfesorAcademicDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateProfesorDto: UpdateProfesorDto) {
     return this.profesoresService.update(id, updateProfesorDto);
   }
 

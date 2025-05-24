@@ -1,3 +1,4 @@
+// backend/src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -27,7 +28,6 @@ import { AcademicModule } from './academic/academic.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true, // Solo para desarrollo
         logging: false,
-        dropSchema: true, // CUIDADO: Esto elimina todas las tablas al iniciar
         autoLoadEntities: true,
       }),
       inject: [ConfigService],
@@ -38,7 +38,7 @@ import { AcademicModule } from './academic/academic.module';
     UsersModule,
     ProjectsModule,
     TasksModule,
-    AcademicModule, // ✅ AGREGADO
+    AcademicModule, // ✅ AGREGADO Y FUNCIONAL
   ],
 })
 export class AppModule {}

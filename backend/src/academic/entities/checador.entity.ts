@@ -1,7 +1,6 @@
 // backend/src/academic/entities/checador.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Asistencia } from './asistencia.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity('checadores')
 export class Checador {
@@ -14,9 +13,6 @@ export class Checador {
   @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'userId' })
   usuario: User;
-
-  @OneToMany(() => Asistencia, asistencia => asistencia.checador)
-  asistencias: Asistencia[];
 
   @Column({ default: true })
   activo: boolean;

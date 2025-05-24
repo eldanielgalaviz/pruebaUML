@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Aula } from '../entities/aula.entity';
 import { CreateAulaDto } from '../dto/create-aula.dto';
+import { UpdateAulaDto } from '../dto/update-aula.dto';
 
 @Injectable()
 export class AulasService {
@@ -60,23 +61,23 @@ export class AulasService {
     return aula;
   }
 
-  async update(id: number, updateAulaDto: Partial<CreateAulaDto>): Promise<Aula> {
-  const aula = await this.findOne(id);
-  
-  // Si se está cambiando el número, verificar que no exista
-  if (updateAulaDto.numero && updateAulaDto.numero !== aula.numero) {
-    const existingAula = await this.aulaRepository.findOne({
-      where: { numero: updateAulaDto.numero }
-    });
+  async update(id: number, updateAulaDto: UpdateAulaDto): Promise<Aula> {
+    const aula = await this.findOne(id);
+    
+    // Si se está cambiando el número, verificar que no exista
+    if (updateAulaDto.numero && updateAulaDto.numero !== aula.numero) {
+      const existingAula = await this.aulaRepository.findOne({
+        where: { numero: updateAulaDto.numero }
+      });
 
-    if (existingAula) {
-      throw new ConflictException('Ya existe un aula con este número');
+      if (existingAula) {
+        throw new ConflictException('Ya existe un aula con este número');
+      }
     }
-  }
 
-  Object.assign(aula, updateAulaDto);
-  return this.aulaRepository.save(aula);
-}
+    Object.assign(aula, updateAulaDto);
+    return this.aulaRepository.save(aula);
+  }
 
   async remove(id: number): Promise<void> {
     const aula = await this.findOne(id);
@@ -186,6 +187,22 @@ export class AulasService {
     };
   }
 
+  async getHorariosDelAula(aulaId: number): Promise<any[]> {
+    const aula = await this.findOne(aulaId);
+    
+    const horariosActivos = aula.horarios.filter(h => h.activo);
+    
+    return horariosActivos.map(horario => ({
+      id: horario.id,
+      dia: horario.dia,
+      horaInicio: horario.horaInicio,
+      horaFin: horario.horaFin,
+      materia: horario.materia,
+      grupo: horario.grupo.nombre,
+      profesor: `${horario.profesor.usuario.nombre} ${horario.profesor.usuario.apellidoPaterno}`
+    }));
+  }
+
   async checkDisponibilidad(numero: string, dia: string, horaInicio: string, horaFin: string): Promise<boolean> {
     const aula = await this.findByNumero(numero);
     
@@ -197,21 +214,6 @@ export class AulasService {
 
     return !conflicto;
   }
-  async getHorariosDelAula(aulaId: number): Promise<any[]> {
-  const aula = await this.findOne(aulaId);
-  
-  const horariosActivos = aula.horarios.filter(h => h.activo);
-  
-  return horariosActivos.map(horario => ({
-    id: horario.id,
-    dia: horario.dia,
-    horaInicio: horario.horaInicio,
-    horaFin: horario.horaFin,
-    materia: horario.materia,
-    grupo: horario.grupo.nombre,
-    profesor: `${horario.profesor.usuario.nombre} ${horario.profesor.usuario.apellidoPaterno}`
-  }));
-}
 
   async getConflictos(aulaId: number, dia: string, horaInicio: string, horaFin: string, excludeHorarioId?: number): Promise<any[]> {
     const aula = await this.findOne(aulaId);

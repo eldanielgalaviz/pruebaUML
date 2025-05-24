@@ -1,18 +1,45 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
+// backend/src/academic/dto/create-profesor.dto.ts
+import { IsEmail, IsNotEmpty, MinLength, IsDate, IsString, Matches } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export class CreateProfesorAcademicDto {
+export class CreateProfesorDto {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  username: string;
+
+  @IsEmail()
+  email: string;
+
   @IsNotEmpty()
   @IsString()
-  codigoProfesor: string;
+  @MinLength(6)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/, {
+    message: 'La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula y un número'
+  })
+  password: string;
 
-  @IsNumber()
-  userId: number;
-
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  departamento?: string;
+  confirmPassword: string;
 
-  @IsOptional()
   @IsString()
-  especialidad?: string;
+  @IsNotEmpty()
+  nombre: string;
+
+  @IsString()
+  @IsNotEmpty()
+  apellidoPaterno: string;
+
+  @IsString()
+  @IsNotEmpty()
+  apellidoMaterno: string;
+
+  @IsDate()
+  @Type(() => Date)
+  fechaNacimiento: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  idProfesor: string;
 }

@@ -27,9 +27,7 @@ import { JefeGrupo } from './entities/jefe-grupo.entity';
 import { Checador } from './entities/checador.entity';
 import { Administrador } from './entities/administrador.entity';
 import { Asistencia } from './entities/asistencia.entity';
-
-// Users
-import { User } from '../users/entities/user.entity';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [

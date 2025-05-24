@@ -79,28 +79,7 @@ export class ProfesoresService {
       throw new InternalServerErrorException('Error al crear el profesor');
     }
   }
-async getHorariosDelProfesor(profesorId: number): Promise<any> {
-  const profesor = await this.findOne(profesorId);
-  
-  const horariosActivos = profesor.horarios.filter(h => h.activo);
-  
-  return {
-    profesor: {
-      id: profesor.id,
-      idProfesor: profesor.idProfesor,
-      nombre: `${profesor.usuario.nombre} ${profesor.usuario.apellidoPaterno}`
-    },
-    horarios: horariosActivos.map(horario => ({
-      id: horario.id,
-      dia: horario.dia,
-      horaInicio: horario.horaInicio,
-      horaFin: horario.horaFin,
-      materia: horario.materia,
-      grupo: horario.grupo.nombre,
-      aula: horario.aula.numero
-    }))
-  };
-}
+
   async findAll(): Promise<Profesor[]> {
     return this.profesorRepository.find({
       where: { activo: true },
@@ -196,6 +175,29 @@ async getHorariosDelProfesor(profesorId: number): Promise<any> {
       gruposAsignados: [...new Set(profesor.horarios.filter(h => h.activo).map(h => h.grupo.nombre))],
       materias: [...new Set(profesor.horarios.filter(h => h.activo).map(h => h.materia))]
     })).sort((a, b) => b.horasAsignadas - a.horasAsignadas);
+  }
+
+  async getHorariosDelProfesor(profesorId: number): Promise<any> {
+    const profesor = await this.findOne(profesorId);
+    
+    const horariosActivos = profesor.horarios.filter(h => h.activo);
+    
+    return {
+      profesor: {
+        id: profesor.id,
+        idProfesor: profesor.idProfesor,
+        nombre: `${profesor.usuario.nombre} ${profesor.usuario.apellidoPaterno}`
+      },
+      horarios: horariosActivos.map(horario => ({
+        id: horario.id,
+        dia: horario.dia,
+        horaInicio: horario.horaInicio,
+        horaFin: horario.horaFin,
+        materia: horario.materia,
+        grupo: horario.grupo.nombre,
+        aula: horario.aula.numero
+      }))
+    };
   }
 
   async getProfesoresByMateria(materia: string): Promise<Profesor[]> {

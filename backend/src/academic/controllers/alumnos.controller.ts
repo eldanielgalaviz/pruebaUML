@@ -1,4 +1,3 @@
-// backend/src/academic/controllers/alumnos.controller.ts
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { AlumnosService } from '../services/alumnos.service';
 import { CreateAlumnoAcademicDto } from '../dto/create-alumno-academic.dto';

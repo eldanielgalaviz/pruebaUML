@@ -1,8 +1,7 @@
-// backend/src/academic/services/horarios.service.ts
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
-import { Horario } from '../entities/horario.entity';
+import { Repository } from 'typeorm';
+import { Horario, DiaSemana } from '../entities/horario.entity';
 import { Grupo } from '../entities/grupo.entity';
 import { Profesor } from '../entities/profesor.entity';
 import { Aula } from '../entities/aula.entity';
@@ -99,9 +98,7 @@ export class HorariosService {
     await this.horarioRepository.save(horario);
   }
 
-  // VALIDACIONES
   private async validateRelatedEntities(createHorarioDto: CreateHorarioDto): Promise<void> {
-    // Validar que existe el grupo
     const grupo = await this.grupoRepository.findOne({
       where: { id: createHorarioDto.grupoId, activo: true }
     });
@@ -109,7 +106,6 @@ export class HorariosService {
       throw new NotFoundException('Grupo no encontrado');
     }
 
-    // Validar que existe el profesor
     const profesor = await this.profesorRepository.findOne({
       where: { id: createHorarioDto.profesorId, activo: true }
     });
@@ -117,7 +113,6 @@ export class HorariosService {
       throw new NotFoundException('Profesor no encontrado');
     }
 
-    // Validar que existe el aula
     const aula = await this.aulaRepository.findOne({
       where: { id: createHorarioDto.aulaId, activa: true }
     });
@@ -134,12 +129,12 @@ export class HorariosService {
       excludeId
     );
 
-    const profesorConflict = conflicts.find(c => c.profesorId === horarioData.profesorId);
+    const profesorConflict = conflicts.find(c => c.profesor?.id === horarioData.profesorId);
     if (profesorConflict) {
       throw new ConflictException(`El profesor ya tiene clase asignada en este horario: ${profesorConflict.materia}`);
     }
 
-    const aulaConflict = conflicts.find(c => c.aulaId === horarioData.aulaId);
+    const aulaConflict = conflicts.find(c => c.aula?.id === horarioData.aulaId);
     if (aulaConflict) {
       throw new ConflictException(`El aula ya está ocupada en este horario por: ${aulaConflict.materia}`);
     }
@@ -162,46 +157,5 @@ export class HorariosService {
     }
 
     return query.getMany();
-  }
-
-  // MÉTODOS ÚTILES PARA ADMINISTRACIÓN
-  async getHorariosSemana(): Promise<any> {
-    const horarios = await this.findAll();
-    
-    // Agrupar por día de la semana
-    const horariosPorDia = {
-      lunes: [],
-      martes: [],
-      miercoles: [],
-      jueves: [],
-      viernes: [],
-      sabado: [],
-      domingo: []
-    };
-
-    horarios.forEach(horario => {
-      if (horariosPorDia[horario.dia]) {
-        horariosPorDia[horario.dia].push(horario);
-      }
-    });
-
-    return horariosPorDia;
-  }
-
-  async getOcupacionAulas(): Promise<any[]> {
-    const aulas = await this.aulaRepository.find({ where: { activa: true } });
-    
-    const ocupacion = await Promise.all(
-      aulas.map(async (aula) => {
-        const horarios = await this.findByAula(aula.id);
-        return {
-          aula: aula,
-          totalHoras: horarios.length,
-          horarios: horarios
-        };
-      })
-    );
-
-    return ocupacion.sort((a, b) => b.totalHoras - a.totalHoras);
   }
 }
